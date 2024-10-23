@@ -1,0 +1,19 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.client.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "module": "ESNext",
+    "jsxImportSource": "vue",
+    "paths": {
+      "~/*": ["./*"],
+    },
+  },
+  "include": ["./**/*.ts", "./**/*.vue"],
+  "dependencies": {
+    "vue": "^3.2.0",
+    "pinia": "^2.2.4",  // Pinia 2.x is compatible with Vue 3.x
+    // other dependencies...
+  }
+}
+
