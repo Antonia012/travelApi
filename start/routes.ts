@@ -7,8 +7,8 @@
 |
 */
 import router from '@adonisjs/core/services/router'
-import {middleware} from "#start/kernel";
-import AuthMiddleware from "#middleware/auth_middleware";
+import { middleware } from '#start/kernel'
+import AuthMiddleware from '#middleware/auth_middleware'
 
 const CountriesController = () => import('#controllers/countries_controller')
 const CitiesController = () => import('#controllers/cities_controller')
@@ -22,7 +22,8 @@ router.on('/about').renderInertia('about')
 router.on('/discover').renderInertia('discover')
 router.on('/login').renderInertia('auth/login')
 router.on('/signup').renderInertia('auth/signup')
-router.on('/mytravels').renderInertia('mytravels')
+// router.on('/mytravels').renderInertia('mytravels')
+
 router.on('/addtravel').renderInertia('addtravel')
 
 router.get('/countries', [CountriesController, 'index'])
@@ -38,7 +39,17 @@ router.post('/login', [AuthController, 'login'])
 // router.get('/logout').use(middleware.auth({guards: ['basicAuth']}))
 const authMiddleware = new AuthMiddleware()
 
-router.get('/logout', async (ctx) => {
-  const authController = new AuthController(); // Create an instance of the controller
-  return await authController.logout(ctx); // Pass the context directly
-}).use(middleware.auth);
+router
+  .get('/logout', async (ctx) => {
+    const authController = new AuthController() // Create an instance of the controller
+    return await authController.logout(ctx) // Pass the context directly
+  })
+  .use(middleware.auth)
+
+router
+  .get('/mytravels', () => {})
+  .use(
+    middleware.auth({
+      guards: ['web', 'api'],
+    })
+  )

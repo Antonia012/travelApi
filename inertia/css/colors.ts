@@ -23,7 +23,7 @@ export const lightPalette = {
   secondary: '#acc5c8',
   accent: '#8e9eb4',
   warning: '#9A031E',
-};
+}
 
 export const darkPalette = {
   background: '#050605',
@@ -32,7 +32,7 @@ export const darkPalette = {
   secondary: '#375053',
   accent: '#4b5b71',
   warning: '#9A031E',
-};
+}
 
 //another one
 /*
@@ -56,4 +56,4 @@ export const darkPalette = {
 };
 */
 
-export type Palette = typeof lightPalette | typeof darkPalette;
+export type Palette = typeof lightPalette | typeof darkPalette

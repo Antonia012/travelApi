@@ -6,5 +6,5 @@ export default class Activity extends BaseModel {
   declare id: number
 
   @column()
-  public name: string;
+  name: string
 }

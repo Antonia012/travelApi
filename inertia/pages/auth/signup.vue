@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import { ref, onMounted, computed } from 'vue';
-import Nav from '~/pages/components/nav.vue';
-import store from '~/css/themeStore';
-import axios from 'axios';
+import { Head } from '@inertiajs/vue3'
+import { ref, onMounted, computed } from 'vue'
+import Nav from '~/pages/components/nav.vue'
+import store from '~/css/themeStore'
+import axios from 'axios'
 
 // Access the Vuex store for theme styles
-const themeStyle = computed(() => store.getters.themeStyle);
+const themeStyle = computed(() => store.getters.themeStyle)
 
 // Load theme from localStorage on component mount
 onMounted(() => {
-  store.dispatch('loadThemeFromLocalStorage');
-});
+  store.dispatch('loadThemeFromLocalStorage')
+})
 
 // Form data refs
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const errorMessage = ref('');
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
 
 // Registration function
 const register = async () => {
-  errorMessage.value = ''; // Clear any previous error messages
+  errorMessage.value = '' // Clear any previous error messages
   try {
     const response = await axios.post('http://localhost:3000/signup', {
       username: username.value,
       email: email.value,
       password: password.value,
-    });
+    })
 
-    console.log(password.value);
+    console.log(password.value)
 
-    console.log('Registration successful', response.data);
+    console.log('Registration successful', response.data)
     // Optionally, redirect to login or another page
   } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Registration failed';
-    console.error('Registration failed', error);
+    errorMessage.value = error.response?.data?.message || 'Registration failed'
+    console.error('Registration failed', error)
   }
-};
+}
 </script>
 
 <template>
@@ -56,14 +56,16 @@ const register = async () => {
           type="text"
           placeholder="Enter Username"
           v-model="username"
-          required />
+          required
+        />
 
         <label for="email"><b>Email</b></label>
         <input
           :style="{ background: themeStyle.backgroundColor }"
           type="email"
           v-model="email"
-          required />
+          required
+        />
 
         <label for="psw"><b>Password</b></label>
         <input
@@ -75,12 +77,7 @@ const register = async () => {
         />
 
         <!-- Button with dynamic theme styling -->
-        <button
-          type="submit"
-          :style="{ backgroundColor: themeStyle.primary }"
-        >
-          Sign Up
-        </button>
+        <button type="submit" :style="{ backgroundColor: themeStyle.primary }">Sign Up</button>
       </div>
 
       <!-- Error Message Display -->
@@ -88,7 +85,9 @@ const register = async () => {
 
       <!-- Footer with cancel button and password link -->
       <div class="signup-ftr-container">
-        <button type="button" class="cancelbtn" :style="{ backgroundColor: themeStyle.secondary }">Cancel</button>
+        <button type="button" class="cancelbtn" :style="{ backgroundColor: themeStyle.secondary }">
+          Cancel
+        </button>
         <span class="psw">Forgot <a href="#">password?</a></span>
       </div>
     </form>
@@ -113,9 +112,9 @@ const register = async () => {
   margin-top: 20px;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="email"] {
+input[type='text'],
+input[type='password'],
+input[type='email'] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -169,6 +168,7 @@ span.psw {
     display: block;
     float: none;
   }
+
   .cancelbtn {
     width: 100%;
   }

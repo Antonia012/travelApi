@@ -1,42 +1,40 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
-import { onMounted, computed, ref } from 'vue';
+import { onMounted, computed, ref } from 'vue'
 import Nav from '~/pages/components/nav.vue'
-import store from '~/css/themeStore';
-import axios from "axios";
+import store from '~/css/themeStore'
+import axios from 'axios'
 
-
-const email = ref('');
-const password = ref('');
-const errorMessage = ref('');
-
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
 
 // Access the Vuex store for theme styles
-const themeStyle = computed(() => store.getters.themeStyle);
+const themeStyle = computed(() => store.getters.themeStyle)
 
 onMounted(() => {
-  store.dispatch('loadThemeFromLocalStorage');
-});
+  store.dispatch('loadThemeFromLocalStorage')
+})
 
 const login = async () => {
-  errorMessage.value = ''; // Clear any previous error messages
+  errorMessage.value = '' // Clear any previous error messages
   try {
     const response = await axios.post('http://localhost:3000/login', {
       email: email.value,
       password: password.value,
-    });
+    })
 
-    console.log('Login successful', response.data);
+    console.log('Login successful', response.data)
 
-    store.commit('setLoginStatus', true);
+    store.commit('setLoginStatus', true)
 
-    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('isLoggedIn', 'true')
     // Optionally, redirect to another page or store user session
   } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Login failed';
-    console.error('Login failed', error);
+    errorMessage.value = error.response?.data?.message || 'Login failed'
+    console.error('Login failed', error)
   }
-};
+}
 </script>
 
 <template>
@@ -55,7 +53,7 @@ const login = async () => {
           v-model="email"
           placeholder="Enter Email"
           required
-        >
+        />
 
         <label for="psw"><b>Password</b></label>
         <input
@@ -63,16 +61,11 @@ const login = async () => {
           type="password"
           v-model="password"
           placeholder="Enter Password"
-          required>
+          required
+        />
 
-        <button
-          type="submit"
-          :style="{ backgroundColor: themeStyle.primary}"
-        >
-          Login
-        </button>
+        <button type="submit" :style="{ backgroundColor: themeStyle.primary }">Login</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-
 
         <label>
           <input
@@ -80,7 +73,7 @@ const login = async () => {
             type="checkbox"
             checked="checked"
             name="remember"
-          >
+          />
           Remember me
         </label>
       </div>
@@ -109,7 +102,8 @@ const login = async () => {
   margin-top: 20px; /* Margin to ensure spacing below nav */
 }
 
-input[type=text], input[type=password] {
+input[type='text'],
+input[type='password'] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;

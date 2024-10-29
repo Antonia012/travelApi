@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import {computed, defineProps, onMounted} from 'vue';
-import themeStore from "~/css/themeStore";
-import store from "~/css/themeStore";
+import { computed, defineProps, onMounted } from 'vue'
+import themeStore from '~/css/themeStore'
+import store from '~/css/themeStore'
 
-const themeStyle = computed(() => store.getters.themeStyle);
+const themeStyle = computed(() => store.getters.themeStyle)
 
 const props = defineProps<{
   post: {
-    id: number;
-    title: string;
-    about: string;
-    countries: { name: string }[];
-    cities: { name: string }[];
-    activities: { name: string }[];
-    todoItems: string[];
-    checkedItems: boolean[];
-  } | null;
-  viewMode: 'edit' | 'view'; // New prop for view mode
-}>();
+    id: number
+    title: string
+    about: string
+    countries: { name: string }[]
+    cities: { name: string }[]
+    activities: { name: string }[]
+    todoItems: string[]
+    checkedItems: boolean[]
+  } | null
+  viewMode: 'edit' | 'view' // New prop for view mode
+}>()
 
 // Load the theme from localStorage when the component is mounted
 onMounted(() => {
-  store.dispatch('loadThemeFromLocalStorage');
-});
-
+  store.dispatch('loadThemeFromLocalStorage')
+})
 </script>
 
 <template>
-  <li :style="{ borderColor: themeStyle.primary}">
+  <li :style="{ borderColor: themeStyle.primary }">
     <h2>{{ post?.title }}</h2>
     <p>About: {{ post?.about }}</p>
-    <p>Countries: {{ post?.countries?.map(country => country.name).join(', ') }}</p>
-    <p>Cities: {{ post?.cities?.map(city => city.name).join(', ') }}</p>
-    <p>Activities: {{ post?.activities?.map(activity => activity.name).join(', ') }}</p>
+    <p>Countries: {{ post?.countries?.map((country) => country.name).join(', ') }}</p>
+    <p>Cities: {{ post?.cities?.map((city) => city.name).join(', ') }}</p>
+    <p>Activities: {{ post?.activities?.map((activity) => activity.name).join(', ') }}</p>
 
     <h3>Todo List:</h3>
     <ul v-if="post?.todoItems?.length > 0">

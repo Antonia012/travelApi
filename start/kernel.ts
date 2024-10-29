@@ -50,6 +50,4 @@ export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
 })
 
-const providers = [
-  '@adonisjs/auth/providers/AuthProvider'
-]
+const providers = ['@adonisjs/auth/providers/AuthProvider']

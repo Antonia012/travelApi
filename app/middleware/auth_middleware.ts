@@ -19,9 +19,9 @@ export default class AuthMiddleware {
       guards?: (keyof Authenticators)[]
     } = {}
   ) {
-    console.log("Checking authenticationnn for: ${ctx.request.url()}")
+    console.log('Checking authenticationnn for: ${ctx.request.url()}')
     if (ctx.request.url() === '/logout') {
-      return next();
+      return next()
     }
 
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })

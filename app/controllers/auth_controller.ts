@@ -1,4 +1,4 @@
-import { HttpContextContract, HttpContext  } from '@ioc:Adonis/Core/HttpContext'
+import { HttpContextContract, HttpContext } from '@ioc:Adonis/Core/HttpContext'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 
@@ -29,30 +29,50 @@ export default class AuthController {
     }
   }
 
-
   // Login
-  async login({ request, response }: HttpContextContract) {
+  // async login({ request, response }: HttpContextContract) {
+  //   const { email, password } = request.only(['email', 'password'])
+  //
+  //   const trimmedPassword = password.trim()
+  //
+  //   const user = await User.findBy('email', email)
+  //
+  //   if (!user) {
+  //     return response.badRequest({ message: 'Invalid credentials user' })
+  //   }
+  //
+  //   const passwordVerified = await hash.verify(user.password, trimmedPassword)
+  //
+  //   console.log(passwordVerified)
+  //
+  //   if (!passwordVerified) {
+  //     return response.badRequest({ message: 'Invalid credentials pswrd' })
+  //   }
+  //
+  //   return response.ok({ message: 'Login successful', user })
+  // }
+
+  async login({ request, auth, response }: HttpContext) {
+    /**
+     * Step 1: Get credentials from the request body
+     */
     const { email, password } = request.only(['email', 'password'])
 
-    const trimmedPassword = password.trim()
+    /**
+     * Step 2: Verify credentials
+     */
+    const user = await User.verifyCredentials(email, password)
 
-    const user = await User.findBy('email', email)
+    /**
+     * Step 3: Login user
+     */
+    await auth.use('web').login(user)
 
-    if (!user) {
-      return response.badRequest({ message: 'Invalid credentials user' })
-    }
-
-    const passwordVerified = await hash.verify(user.password, trimmedPassword)
-
-    console.log(passwordVerified)
-
-    if (!passwordVerified) {
-      return response.badRequest({ message: 'Invalid credentials pswrd' })
-    }
-
-    return response.ok({ message: 'Login successful', user })
+    /**
+     * Step 4: Send them to a protected route
+     */
+    response.redirect('/')
   }
-
 
   // Logout
   async logout({ auth, response }: HttpContextContract) {
