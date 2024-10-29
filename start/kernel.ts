@@ -49,3 +49,7 @@ export const middleware = router.named({
   guest: () => import('#middleware/guest_middleware'),
   auth: () => import('#middleware/auth_middleware'),
 })
+
+const providers = [
+  '@adonisjs/auth/providers/AuthProvider'
+]

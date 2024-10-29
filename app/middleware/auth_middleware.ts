@@ -19,6 +19,11 @@ export default class AuthMiddleware {
       guards?: (keyof Authenticators)[]
     } = {}
   ) {
+    console.log("Checking authenticationnn for: ${ctx.request.url()}")
+    if (ctx.request.url() === '/logout') {
+      return next();
+    }
+
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
     return next()
   }
@@ -27,6 +32,7 @@ export default class AuthMiddleware {
     // Invalidate the user session
     await ctx.auth.logout()
 
+    console.log(this.redirectTo)
     // Redirect to the login page or another page after logout
     return ctx.response.redirect(this.redirectTo)
   }

@@ -6,6 +6,7 @@ import { computed, onMounted, ref } from 'vue'
 //const store = useStore();
 
 import store from '~/css/themeStore'
+import axios from "axios";
 
 const isLoading = ref(true)
 
@@ -30,6 +31,21 @@ onMounted(async () => {
   store.dispatch('loadThemeFromLocalStorage')
   isLoading.value = false
 })
+
+const logout = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/logout');
+
+    console.log('Logout successful', response.data);
+
+    store.commit('setLoginStatus', false);
+
+    localStorage.setItem('isLoggedIn', 'false');
+    // Optionally, redirect to another page or store user session
+  } catch (error: any) {
+    console.error('Logout failed', error);
+  }
+};
 </script>
 
 <template>
@@ -57,7 +73,7 @@ onMounted(async () => {
     <div class="auth-container split">
       <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
       <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
-      <a v-if="isLoggedIn" href="/logout" class="auth-split" :style="themeStyle">Log Out</a>
+      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle">Log Out</a>
     </div>
     <!--    </template>-->
 

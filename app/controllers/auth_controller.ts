@@ -1,4 +1,4 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { HttpContextContract, HttpContext  } from '@ioc:Adonis/Core/HttpContext'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 
@@ -29,6 +29,7 @@ export default class AuthController {
     }
   }
 
+
   // Login
   async login({ request, response }: HttpContextContract) {
     const { email, password } = request.only(['email', 'password'])
@@ -51,6 +52,7 @@ export default class AuthController {
 
     return response.ok({ message: 'Login successful', user })
   }
+
 
   // Logout
   async logout({ auth, response }: HttpContextContract) {
