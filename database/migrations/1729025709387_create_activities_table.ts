@@ -11,6 +11,13 @@ export default class extends BaseSchema {
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
+
+    // Insert default data
+    await Database.table(this.tableName).insert([
+      { name: 'Default Activity 1', created_at: new Date(), updated_at: new Date() },
+      { name: 'Default Activity 2', created_at: new Date(), updated_at: new Date() },
+      { name: 'Default Activity 3', created_at: new Date(), updated_at: new Date() },
+    ])
   }
 
   async down() {

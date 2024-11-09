@@ -26,9 +26,6 @@ const store = createStore({
     setLoginStatus(state, status: boolean) {
       state.isLoggedIn = status
     },
-    setLoginStatus(state, status: boolean) {
-      state.isLoggedIn = status
-    },
   },
   getters: {
     themeStyle(state) {

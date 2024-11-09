@@ -345,8 +345,8 @@ const submitForm = async () => {
       </div>
 
       <div class="travel-ftr-container">
-        <button type="button" class="btn btn-cancel">Cancel</button>
-        <button type="submit" class="btn btn-submit">Add travel</button>
+        <button type="button" class="btn " :style="{ backgroundColor: themeStyle.warning }">Cancel</button>
+        <button type="submit" class="btn " :style="{ backgroundColor: themeStyle.primary }">Add travel</button>
       </div>
     </form>
   </div>
@@ -391,13 +391,6 @@ input[type='text'] {
   width: 100%;
 }
 
-.btn-submit {
-  background-color: #0f4c5c;
-}
-
-.btn-cancel {
-  background-color: #9a031e;
-}
 
 button:hover {
   opacity: 0.8;

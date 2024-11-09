@@ -9,11 +9,13 @@ import store from '~/css/themeStore'
 import axios from 'axios'
 
 const isLoading = ref(true)
+const userName = ref('')
 
 // Computed properties to access state reactively from Vuex
 const themeStyle = computed(() => store.getters.themeStyle)
 const isMenuOpen = computed(() => store.getters.isMenuOpen) // Access via getter
 const isLoggedIn = computed(() => store.state.isLoggedIn) // You can also access it directly as it's reactive
+
 
 // Function to toggle the theme using Vuex mutation
 function toggleTheme() {
@@ -30,11 +32,19 @@ function toggleMenu() {
 onMounted(async () => {
   store.dispatch('loadThemeFromLocalStorage')
   isLoading.value = false
+
+  try {
+    const response = await axios.get('http://localhost:3000/user')
+    userName.value = response.data.username
+    console.log('sdfsdf', userName)
+  } catch (error) {
+    console.error('Failed to fetch user details', error)
+  }
 })
 
 const logout = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/logout')
+    const response = await axios.post('http://localhost:3000/logout')
 
     console.log('Logout successful', response.data)
 
@@ -56,6 +66,7 @@ const logout = async () => {
   <!-- Apply theme dynamically to the entire navigation bar -->
   <div :class="['topnav', { responsive: isMenuOpen }]" :style="themeStyle">
     <!-- Toggle theme button -->
+
     <div>
       <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
     </div>
@@ -76,6 +87,7 @@ const logout = async () => {
       <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle"
         >Log Out</a
       >
+      <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName.username }}</span>
     </div>
     <!--    </template>-->
 
