@@ -8,14 +8,13 @@ import { computed, onMounted, ref } from 'vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
 
-const isLoading = ref(true)
+// const isLoading = ref(true)
 const userName = ref('')
 
 // Computed properties to access state reactively from Vuex
 const themeStyle = computed(() => store.getters.themeStyle)
 const isMenuOpen = computed(() => store.getters.isMenuOpen) // Access via getter
 const isLoggedIn = computed(() => store.state.isLoggedIn) // You can also access it directly as it's reactive
-
 
 // Function to toggle the theme using Vuex mutation
 function toggleTheme() {
@@ -31,7 +30,7 @@ function toggleMenu() {
 // Load the theme from localStorage when the component is mounted
 onMounted(async () => {
   store.dispatch('loadThemeFromLocalStorage')
-  isLoading.value = false
+  // isLoading.value = false
 
   try {
     const response = await axios.get('http://localhost:3000/user')
@@ -87,7 +86,7 @@ const logout = async () => {
       <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle"
         >Log Out</a
       >
-      <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName.username }}</span>
+      <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</span>
     </div>
     <!--    </template>-->
 

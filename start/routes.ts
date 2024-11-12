@@ -22,8 +22,8 @@ router.on('/addtravel').renderInertia('addtravel')
 router.group(() => {
   router.on('/signup').renderInertia('auth/signup')
   router.post('/signup', [AuthController, 'register'])
-  router.on('/login').renderInertia('auth/login')
-  router.post('/login', [AuthController, 'store'])
+  router.on('/login').renderInertia('auth/login').as('login.index')
+  router.post('/login', [AuthController, 'store']).as('login.store')
 })
 router.post('/logout', [AuthController, 'logout'])
 

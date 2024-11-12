@@ -1,4 +1,4 @@
-import { HttpContextContract, HttpContext } from '@ioc:Adonis/Core/HttpContext'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 
@@ -65,8 +65,8 @@ export default class AuthController {
     console.log('after', auth.use('web').user)
 
     // response.redirect.toRoute('about')
-
-    return response.ok({ message: 'Login successful', user })
+    // return response.redirect().toRoute('about')
+    return response.ok({ message: 'Login successful', user, redirectUrl: '/about' })
   }
 
   // async login({ request, auth, response }: HttpContext) {
@@ -121,6 +121,6 @@ export default class AuthController {
       return response.unauthorized({ message: 'navber User not authenticated' })
     }
 
-    return response.ok({ username: auth.use('web').user })
+    return response.ok(auth.use('web').user)
   }
 }

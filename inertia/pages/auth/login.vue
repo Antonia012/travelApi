@@ -4,6 +4,7 @@ import { onMounted, computed, ref } from 'vue'
 import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
+import router from "@adonisjs/core/services/router";
 
 const email = ref('')
 const password = ref('')
@@ -24,11 +25,17 @@ const login = async () => {
       password: password.value,
     })
 
+    // If login is successful, handle redirect
+    // if (response.data.redirectUrl) {
+    //   router.push{response.data.redirectUrl}) // Redirect user to the returned URL
+    // }
+
     console.log('Login successful', response.data)
 
     store.commit('setLoginStatus', true)
 
     localStorage.setItem('isLoggedIn', 'true')
+
     // Optionally, redirect to another page or store user session
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || 'Login failed'
@@ -150,9 +157,6 @@ span.psw {
   span.psw {
     display: block;
     float: none;
-  }
-  .cancelbtn {
-    width: 100%;
   }
 }
 </style>
