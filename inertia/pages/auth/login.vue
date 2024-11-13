@@ -4,7 +4,6 @@ import { onMounted, computed, ref } from 'vue'
 import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
-import router from "@adonisjs/core/services/router";
 
 const email = ref('')
 const password = ref('')
@@ -24,11 +23,6 @@ const login = async () => {
       email: email.value,
       password: password.value,
     })
-
-    // If login is successful, handle redirect
-    // if (response.data.redirectUrl) {
-    //   router.push{response.data.redirectUrl}) // Redirect user to the returned URL
-    // }
 
     console.log('Login successful', response.data)
 
@@ -74,15 +68,15 @@ const login = async () => {
         <button type="submit" :style="{ backgroundColor: themeStyle.primary }">Login</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-        <label>
-          <input
-            :style="{ background: themeStyle.backgroundColor }"
-            type="checkbox"
-            checked="checked"
-            name="remember"
-          />
-          Remember me
-        </label>
+<!--        <label>-->
+<!--          <input-->
+<!--            :style="{ background: themeStyle.backgroundColor }"-->
+<!--            type="checkbox"-->
+<!--            checked="checked"-->
+<!--            name="remember"-->
+<!--          />-->
+<!--          Remember me-->
+<!--        </label>-->
       </div>
 
       <div class="login-ftr-container">

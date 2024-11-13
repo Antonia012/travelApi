@@ -29,7 +29,7 @@ function toggleMenu() {
 
 // Load the theme from localStorage when the component is mounted
 onMounted(async () => {
-  store.dispatch('loadThemeFromLocalStorage')
+  await store.dispatch('loadThemeFromLocalStorage')
   // isLoading.value = false
 
   try {
@@ -65,30 +65,29 @@ const logout = async () => {
   <!-- Apply theme dynamically to the entire navigation bar -->
   <div :class="['topnav', { responsive: isMenuOpen }]" :style="themeStyle">
     <!-- Toggle theme button -->
+    <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
 
-    <div>
-      <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
+    <!-- Left section: Navigation links like Discover, About, My Travels (if logged in) -->
+    <div class="nav-left">
+      <a href="/discover" :style="themeStyle">Discover</a>
+      <a href="/about" :style="themeStyle">About</a>
     </div>
 
-    <!-- Navigation links -->
-    <a href="/discover" :style="themeStyle">Discover</a>
+    <!-- Center section: Logo (redirects to home page) -->
+    <div class="nav-center">
+      <a href="/" class="logo">
+        <img src="/resources/img/logo.png" alt="Logo" class="logo-img" />
+      </a>
+    </div>
 
-    <!--    <template v-if="!isLoading">-->
-    <!-- Always visible About link -->
-    <a href="/about" :style="themeStyle">About</a>
-    <!-- Conditionally display "My travels" based on login state -->
-    <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My travels</a>
-
-    <!-- Authentication links (login, signup or logout) -->
-    <div class="auth-container split">
+    <!-- Right section: Authentication links and user info -->
+    <div class="nav-right">
       <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
       <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
-      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle"
-        >Log Out</a
-      >
+      <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
+      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle">Log Out</a>
       <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</span>
     </div>
-    <!--    </template>-->
 
     <!-- Mobile Menu Icon -->
     <a href="javascript:void(0);" class="icon" @click="toggleMenu" :style="themeStyle">
@@ -98,6 +97,7 @@ const logout = async () => {
 </template>
 
 <style scoped>
+
 /* General Styles for the Navigation Bar */
 .topnav {
   overflow: hidden;
@@ -108,22 +108,57 @@ const logout = async () => {
   padding: 10px;
 }
 
-.topnav a {
-  float: left;
-  display: block;
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-left a,
+.nav-right a {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
 }
 
+.nav-center {
+  justify-content: center;
+}
+
+.nav-center .logo {
+  display: block;
+}
+
+.nav-center .logo-img {
+  max-width: 90px; /* Adjust size of the logo */
+}
+
 .topnav .active {
   color: white;
 }
 
-/* Create a right-aligned (split) link inside the navigation bar */
-.split {
-  float: right;
+/* Split layout for the left, center, and right sections */
+.nav-left {
+  justify-content: flex-end;
+  flex-grow: 1;
+}
+
+.nav-right {
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+
+.auth-container {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-split {
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .topnav .icon {
@@ -160,12 +195,6 @@ const logout = async () => {
 .auth-container {
   display: flex;
   gap: 10px; /* Adjust the gap as needed */
-}
-
-.auth-split {
-  text-decoration: none; /* Optional: Remove underline */
-  padding: 10px;
-  border-radius: 5px;
 }
 
 [v-cloak] {

@@ -35,6 +35,12 @@ export const darkPalette = {
 }
 
 //another one
+
+//#16A7DC blue
+//#6cdd8f green
+//#ceb8a1 bezova
+//#7289ff modra
+//#d94d3c cervena
 /*
 export const lightPalette = {
   background: '#fcfcfc',

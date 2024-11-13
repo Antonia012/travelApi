@@ -23,7 +23,6 @@ const fetchTravelPosts = async () => {
 // Fetch travel posts when the component is mounted
 onMounted(() => {
   fetchTravelPosts()
-
   store.dispatch('loadThemeFromLocalStorage')
 })
 </script>
@@ -34,7 +33,7 @@ onMounted(() => {
   <div :style="themeStyle" class="app-container">
     <h1>My Travels</h1>
 
-    <a href="/addtravel">Add New Travel</a>
+    <a href="/addtravel" :style="{ borderColor: themeStyle.accent }">Add New Travel</a>
 
     <ul>
       <TravelPost v-for="post in travelPosts" :key="post.id" :post="post" viewMode="edit" />
@@ -66,13 +65,12 @@ a {
   display: inline-block;
   margin-bottom: 20px;
   padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
+  border-width: 2px;
   border-radius: 5px;
   text-decoration: none;
 }
 
 a:hover {
-  background-color: #0056b3;
+  background-color: v-bind(themeStyle.accent);
 }
 </style>

@@ -194,224 +194,212 @@ const submitForm = async () => {
   <Head title="Travel Map - Add Travel" />
   <Nav />
 
-  <div class="outer-travel-container" :style="themeStyle">
-    <form class="travel-container" @submit.prevent="submitForm">
-      <h2>Plan new travel</h2>
+  <body :style="themeStyle">
+    <div class="container">
+      <form class="add-travel" @submit.prevent="submitForm">
+        <div class="container__header">Plan new travel</div>
 
-      <div class="travel-container-data">
-        <label for="title"><b>Title</b></label>
-        <input
-          :style="{ background: themeStyle.backgroundColor }"
-          type="text"
-          v-model="title"
-          placeholder="Enter Title"
-          name="title"
-          required
-        />
-      </div>
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="title"><b>Title</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input type="text" v-model="title" placeholder="Enter Title" name="title" required />
+          </div>
+        </div>
 
-      <div class="travel-container-data">
-        <label for="about"><b>About</b></label>
-        <input
-          :style="{ background: themeStyle.backgroundColor }"
-          type="text"
-          v-model="about"
-          placeholder="Enter About Trip"
-          name="about"
-        />
-      </div>
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="about"><b>About</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input type="text" v-model="about" placeholder="Enter About Trip" name="about" />
+          </div>
+        </div>
 
-      <div class="travel-container-data">
-        <label for="countries"><b>Visited Countries</b></label>
-        <div class="countries-input">
-          <input
-            :style="{ background: themeStyle.backgroundColor }"
-            type="text"
-            v-model="countryInput"
-            placeholder="Enter Country"
-            @keydown.enter.prevent="addCountry({ id: null, name: countryInput })"
-          />
-          <div class="suggestions" v-if="countryInput && filteredCountries.length > 0">
-            <ul>
-              <li
-                v-for="(country, index) in filteredCountries"
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="countries"><b>Visited Countries</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input
+              type="text"
+              v-model="countryInput"
+              placeholder="Enter Country"
+              @keydown.enter.prevent="addCountry({ id: null, name: countryInput })"
+            />
+            <div class="add-travel__suggestion" v-if="countryInput && filteredCountries.length > 0">
+              <ul>
+                <li
+                  v-for="(country) in filteredCountries"
+                  :key="country.id"
+                  @click="addCountry(country)"
+                  class="suggestion-item"
+                >
+                  {{ country.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="selected-countries">
+              <span
+                v-for="(country, index) in selectedCountries"
                 :key="country.id"
-                @click="addCountry(country)"
-                class="suggestion-item"
+                class="add-travel__item"
               >
                 {{ country.name }}
-              </li>
-            </ul>
-          </div>
-          <div class="selected-countries">
-            <span
-              v-for="(country, index) in selectedCountries"
-              :key="country.id"
-              class="country-item"
-            >
-              {{ country.name }}
-              <button @click="removeCountry(index)">x</button>
-            </span>
+                <button class="add-travel__item-button"  @click="removeCountry(index)">x</button>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="travel-container-data">
-        <label for="cities"><b>Visited Cities</b></label>
-        <div class="cities-input">
-          <input
-            :style="{ background: themeStyle.backgroundColor }"
-            type="text"
-            v-model="cityInput"
-            placeholder="Enter City"
-            @keydown.enter.prevent="addCity({ id: null, name: cityInput })"
-          />
-          <div class="suggestions" v-if="cityInput && filteredCities.length > 0">
-            <ul>
-              <li
-                v-for="(city, index) in filteredCities"
-                :key="city.id"
-                @click="addCity(city)"
-                class="suggestion-item"
-              >
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="cities"><b>Visited Cities</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input
+              type="text"
+              v-model="cityInput"
+              placeholder="Enter City"
+              @keydown.enter.prevent="addCity({ id: null, name: cityInput })"
+            />
+            <div class="add-travel__suggestion" v-if="cityInput && filteredCities.length > 0">
+              <ul>
+                <li
+                  v-for="(city) in filteredCities"
+                  :key="city.id"
+                  @click="addCity(city)"
+                  class="add-travel__item"
+                >
+                  {{ city.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="selected-cities">
+              <span v-for="(city, index) in selectedCities" :key="city.id" class="city-item">
                 {{ city.name }}
-              </li>
-            </ul>
-          </div>
-          <div class="selected-cities">
-            <span v-for="(city, index) in selectedCities" :key="city.id" class="city-item">
-              {{ city.name }}
-              <button @click="removeCity(index)">x</button>
-            </span>
+                <button class="add-travel__item-button"  @click="removeCity(index)">x</button>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="travel-container-data">
-        <label for="activities"><b>Activities</b></label>
-        <div class="activities-input">
-          <input
-            :style="{ background: themeStyle.backgroundColor }"
-            type="text"
-            v-model="activityInput"
-            placeholder="Enter Activity"
-            @keydown.enter.prevent="addActivity({ id: null, name: activityInput })"
-          />
-          <div class="suggestions" v-if="activityInput && filteredActivities.length > 0">
-            <ul>
-              <li
-                v-for="(activity, index) in filteredActivities"
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="activities"><b>Activities</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input
+              type="text"
+              v-model="activityInput"
+              placeholder="Enter Activity"
+              @keydown.enter.prevent="addActivity({ id: null, name: activityInput })"
+            />
+            <div class="add-travel__suggestion" v-if="activityInput && filteredActivities.length > 0">
+              <ul>
+                <li
+                  v-for="(activity) in filteredActivities"
+                  :key="activity.id"
+                  @click="addActivity(activity)"
+                  class="add-travel__item"
+                >
+                  {{ activity.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="selected-activities">
+              <span
+                v-for="(activity, index) in selectedActivities"
                 :key="activity.id"
-                @click="addActivity(activity)"
-                class="suggestion-item"
+                class="add-travel__item"
               >
                 {{ activity.name }}
+                <button class="add-travel__item-button" @click="removeActivity(index)">x</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-travel__section">
+          <div class="container__title">
+            <label for="todo"><b>Todo List</b></label>
+          </div>
+          <div class="add-travel__input">
+            <input
+              v-model="newTask"
+              @keydown.enter.prevent="addTodo"
+              placeholder="Add a new task"
+            />
+            <ul>
+              <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
+                <button class="add-travel__btn--add-todo" @click.prevent="insertTodo(index)">+</button>
+                <div class="todo-item">
+                  <input class="add-travel__checkbox" type="checkbox" v-model="todo.completed" />
+                  <span>{{ todo.task }}</span>
+                </div>
+                <button class="add-travel__btn add-travel__btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
               </li>
             </ul>
           </div>
-          <div class="selected-activities">
-            <span
-              v-for="(activity, index) in selectedActivities"
-              :key="activity.id"
-              class="activity-item"
-            >
-              {{ activity.name }}
-              <button @click="removeActivity(index)">x</button>
-            </span>
-          </div>
         </div>
-      </div>
 
-      <div class="travel-container-data">
-        <label for="todo"><b>Todo List</b></label>
-        <div class="todo-input">
-          <input
-            :style="{ background: themeStyle.backgroundColor }"
-            v-model="newTask"
-            @keydown.enter.prevent="addTodo"
-            placeholder="Add a new task"
-          />
-          <ul>
-            <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
-              <button class="insert-button" @click.prevent="insertTodo(index)">+</button>
-              <div class="todo-item">
-                <input type="checkbox" v-model="todo.completed" />
-                <span>{{ todo.task }}</span>
-                <button class="delete" @click.prevent="deleteTodo(index)">Delete</button>
-              </div>
-            </li>
-          </ul>
+        <div class="add-travel__ftr">
+          <button type="button" class="add-travel__btn add-travel__btn--delete">
+            Cancel
+          </button>
+          <button type="submit" class="add-travel__btn add-travel__btn--submit">
+            Add travel
+          </button>
         </div>
-      </div>
-
-      <div class="travel-ftr-container">
-        <button type="button" class="btn " :style="{ backgroundColor: themeStyle.warning }">Cancel</button>
-        <button type="submit" class="btn " :style="{ backgroundColor: themeStyle.primary }">Add travel</button>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  </body>
 </template>
 
 <style scoped>
-input.active {
-  border-color: blue; /* Highlight the active input */
-}
-
-.outer-travel-container {
+.add-travel {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  height: 100%;
-  padding-top: 20px;
-}
-
-.travel-container {
-  border: 1px solid #939090;
-  padding: 30px;
   width: 100%;
-  max-width: 400px;
-  margin-top: 20px;
+
+  border: 2px solid v-bind(themeStyle.accent);
+  box-shadow:
+    0 2px 16px v-bind(themeStyle.accent),
+    0 0 0 2px v-bind(themeStyle.accent);
+
+  border-radius: 32px;
+  padding: 30px;
 }
 
-input[type='text'] {
+input {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid #ccc;
+  border: 2px solid v-bind(themeStyle.primary);
   box-sizing: border-box;
+  border-radius: 16px;
+  background: v-bind(themeStyle.backgroundColor);
 }
 
-.btn {
-  color: white;
-  padding: 14px 20px;
-  margin: 8px;
-  border: none;
-  cursor: pointer;
+.add-travel__section {
   width: 100%;
-}
-
-
-button:hover {
-  opacity: 0.8;
-}
-
-.travel-container-data {
   padding: 16px;
 }
 
-.travel-ftr-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-
-.countries-input,
-.cities-input,
-.activities-input {
+.add-travel__input {
   display: flex;
   flex-direction: column;
-  position: relative; /* Added for positioning suggestions */
+  position: relative;
+}
+.add-travel__ftr {
+  display: flex;
+  justify-content: right;
+  width: 100%;
+  margin-top: 16px;
 }
 
 .selected-countries,
@@ -425,46 +413,40 @@ button:hover {
 .selected-countries span,
 .selected-cities span,
 .selected-activities span {
-  background-color: #e0e0e0;
   padding: 5px;
   margin: 5px;
   border-radius: 4px;
 }
 
-.city-item,
-.country-item,
-.activity-item {
+.add-travel__item {
   display: flex;
   align-items: center;
   margin: 5px;
 }
 
-.selected-countries button,
-.selected-cities button,
-.selected-activities button {
-  margin-left: 5px;
-  background-color: red;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  font-size: 14px;
+.add-travel__item-button {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  margin-left: 5px;
+  color: v-bind(themeStyle.warning);
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 0;
 }
 
-.suggestions {
+.add-travel__suggestion {
   position: absolute;
   z-index: 10;
   width: 100%;
-  border: 1px solid #ccc;
-  background-color: white;
-  margin-top: 60px; /* Space to prevent overlap */
-  overflow-y: auto; /* Enable scrolling if suggestions exceed height */
+  border: 2px solid v-bind(themeStyle.accent);
+  border-radius: 16px;
+  background-color: v-bind(themeStyle.backgroundColor);
+  margin-top: 70px;
+  overflow-y: auto;
 }
 
 .suggestion-item {
@@ -476,14 +458,6 @@ button:hover {
   background-color: #f0f0f0;
 }
 
-.todo-input {
-  position: relative; /* For positioning the button */
-}
-
-.todo-input {
-  position: relative;
-}
-
 ul {
   list-style-type: none;
   padding: 0;
@@ -491,20 +465,64 @@ ul {
 
 .todo-list-item {
   display: flex;
+  gap:10px;
   align-items: center;
-  margin: 5px 0; /* Add some vertical spacing */
+  justify-content: left;
+  margin: 5px 0;
 }
 
 .todo-item {
   display: flex;
+  gap:10px;
   align-items: center;
-  flex-grow: 1; /* Allows it to take the available space */
+  flex-grow: 1;
 }
 
-.insert-button {
-  background-color: green;
-  color: white;
-  border: none;
+.add-travel__checkbox {
+  width: 30px;
+  height: 30px;
+  transform: scale(1.5);
+  border: 2px solid v-bind(themeStyle.accent);
+  border-radius: 5px;
+  appearance: none;
+  background-color: v-bind(themeStyle.backgroundColor);
+  cursor: pointer;
+  outline: none;
+  padding:0;
+  margin: 20px 10px;
+}
+
+.add-travel__checkbox:checked {
+  background-color: v-bind(themeStyle.backgroundColor);
+  border-color: v-bind(themeStyle.accent);
+  position: relative;
+}
+
+.add-travel__checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 10px;
+  border: solid v-bind(themeStyle.accent);
+  border-width: 0 3px 3px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.add-travel__btn {
+  border: 2px solid v-bind(themeStyle.color);
+  color:  v-bind(themeStyle.color);
+  padding: 14px 20px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+
+.add-travel__btn--add-todo {
+  border: 2px solid v-bind(themeStyle.primary);
+  color: v-bind(themeStyle.primary);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -512,17 +530,19 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px; /* Space from the todo item */
-  transition: background-color 0.3s; /* Smooth transition for hover */
+  margin-right: 10px;
+  transition: background-color 0.3s;
 }
 
-.insert-button:hover {
-  background-color: darkgreen; /* Change color on hover */
+.add-travel__btn--delete{
+  border-color: v-bind(themeStyle.warning);
+  color: v-bind(themeStyle.warning);
+
 }
 
-button.delete {
-  background-color: red;
-  color: white;
-  margin-left: 10px; /* Space between task and delete button */
+.add-travel__btn--submit {
+  border-color: v-bind(themeStyle.primary);
+  color: v-bind(themeStyle.primary);
+
 }
 </style>

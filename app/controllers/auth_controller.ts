@@ -66,7 +66,7 @@ export default class AuthController {
 
     // response.redirect.toRoute('about')
     // return response.redirect().toRoute('about')
-    return response.ok({ message: 'Login successful', user, redirectUrl: '/about' })
+    return response.ok({ message: 'Login successful', user })
   }
 
   // async login({ request, auth, response }: HttpContext) {

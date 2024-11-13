@@ -18,6 +18,7 @@ const AuthController = () => import('#controllers/auth_controller')
 router.on('/').renderInertia('home').as('home')
 router.on('/about').renderInertia('about').as('about')
 router.on('/discover').renderInertia('discover').as('discover')
+
 router.on('/addtravel').renderInertia('addtravel')
 router.group(() => {
   router.on('/signup').renderInertia('auth/signup')
