@@ -197,10 +197,10 @@ const submitForm = async () => {
   <body :style="themeStyle">
     <div class="container">
       <form class="add-travel" @submit.prevent="submitForm">
-        <div class="container__header">Plan new travel</div>
+        <div class="container__title">Plan new travel</div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="title"><b>Title</b></label>
           </div>
           <div class="add-travel__input">
@@ -209,7 +209,7 @@ const submitForm = async () => {
         </div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="about"><b>About</b></label>
           </div>
           <div class="add-travel__input">
@@ -218,7 +218,7 @@ const submitForm = async () => {
         </div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="countries"><b>Visited Countries</b></label>
           </div>
           <div class="add-travel__input">
@@ -231,7 +231,7 @@ const submitForm = async () => {
             <div class="add-travel__suggestion" v-if="countryInput && filteredCountries.length > 0">
               <ul>
                 <li
-                  v-for="(country) in filteredCountries"
+                  v-for="country in filteredCountries"
                   :key="country.id"
                   @click="addCountry(country)"
                   class="suggestion-item"
@@ -247,14 +247,14 @@ const submitForm = async () => {
                 class="add-travel__item"
               >
                 {{ country.name }}
-                <button class="add-travel__item-button"  @click="removeCountry(index)">x</button>
+                <button class="add-travel__item-button" @click="removeCountry(index)">x</button>
               </span>
             </div>
           </div>
         </div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="cities"><b>Visited Cities</b></label>
           </div>
           <div class="add-travel__input">
@@ -267,7 +267,7 @@ const submitForm = async () => {
             <div class="add-travel__suggestion" v-if="cityInput && filteredCities.length > 0">
               <ul>
                 <li
-                  v-for="(city) in filteredCities"
+                  v-for="city in filteredCities"
                   :key="city.id"
                   @click="addCity(city)"
                   class="add-travel__item"
@@ -277,16 +277,16 @@ const submitForm = async () => {
               </ul>
             </div>
             <div class="selected-cities">
-              <span v-for="(city, index) in selectedCities" :key="city.id" class="city-item">
+              <span v-for="(city, index) in selectedCities" :key="city.id" class="add-travel__item">
                 {{ city.name }}
-                <button class="add-travel__item-button"  @click="removeCity(index)">x</button>
+                <button class="add-travel__item-button" @click="removeCity(index)">x</button>
               </span>
             </div>
           </div>
         </div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="activities"><b>Activities</b></label>
           </div>
           <div class="add-travel__input">
@@ -296,10 +296,13 @@ const submitForm = async () => {
               placeholder="Enter Activity"
               @keydown.enter.prevent="addActivity({ id: null, name: activityInput })"
             />
-            <div class="add-travel__suggestion" v-if="activityInput && filteredActivities.length > 0">
+            <div
+              class="add-travel__suggestion"
+              v-if="activityInput && filteredActivities.length > 0"
+            >
               <ul>
                 <li
-                  v-for="(activity) in filteredActivities"
+                  v-for="activity in filteredActivities"
                   :key="activity.id"
                   @click="addActivity(activity)"
                   class="add-travel__item"
@@ -322,7 +325,7 @@ const submitForm = async () => {
         </div>
 
         <div class="add-travel__section">
-          <div class="container__title">
+          <div class="container__subtitle">
             <label for="todo"><b>Todo List</b></label>
           </div>
           <div class="add-travel__input">
@@ -333,24 +336,24 @@ const submitForm = async () => {
             />
             <ul>
               <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
-                <button class="add-travel__btn--add-todo" @click.prevent="insertTodo(index)">+</button>
+                <button class="btn--add-todo" @click.prevent="insertTodo(index)">+</button>
                 <div class="todo-item">
                   <input class="add-travel__checkbox" type="checkbox" v-model="todo.completed" />
                   <span>{{ todo.task }}</span>
                 </div>
-                <button class="add-travel__btn add-travel__btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
+                <button class="btn btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
               </li>
             </ul>
           </div>
         </div>
 
         <div class="add-travel__ftr">
-          <button type="button" class="add-travel__btn add-travel__btn--delete">
-            Cancel
-          </button>
-          <button type="submit" class="add-travel__btn add-travel__btn--submit">
-            Add travel
-          </button>
+          <div>
+            <button type="button" class="btn btn--delete">Cancel</button>
+          </div>
+          <div>
+            <button type="submit" class="btn btn--submit">Add travel</button>
+          </div>
         </div>
       </form>
     </div>
@@ -395,9 +398,10 @@ input {
   flex-direction: column;
   position: relative;
 }
+
 .add-travel__ftr {
   display: flex;
-  justify-content: right;
+  justify-content: space-evenly;
   width: 100%;
   margin-top: 16px;
 }
@@ -407,6 +411,7 @@ input {
 .selected-activities {
   margin-top: 5px;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
 }
 
@@ -420,6 +425,7 @@ input {
 
 .add-travel__item {
   display: flex;
+  flex-direction: row;
   align-items: center;
   margin: 5px;
 }
@@ -465,7 +471,7 @@ ul {
 
 .todo-list-item {
   display: flex;
-  gap:10px;
+  gap: 10px;
   align-items: center;
   justify-content: left;
   margin: 5px 0;
@@ -473,7 +479,7 @@ ul {
 
 .todo-item {
   display: flex;
-  gap:10px;
+  gap: 10px;
   align-items: center;
   flex-grow: 1;
 }
@@ -488,7 +494,7 @@ ul {
   background-color: v-bind(themeStyle.backgroundColor);
   cursor: pointer;
   outline: none;
-  padding:0;
+  padding: 0;
   margin: 20px 10px;
 }
 
@@ -510,17 +516,7 @@ ul {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.add-travel__btn {
-  border: 2px solid v-bind(themeStyle.color);
-  color:  v-bind(themeStyle.color);
-  padding: 14px 20px;
-  margin: 8px;
-  cursor: pointer;
-  border-radius: 16px;
-}
-
-
-.add-travel__btn--add-todo {
+.btn--add-todo {
   border: 2px solid v-bind(themeStyle.primary);
   color: v-bind(themeStyle.primary);
   border-radius: 50%;
@@ -534,15 +530,13 @@ ul {
   transition: background-color 0.3s;
 }
 
-.add-travel__btn--delete{
+.btn--delete {
   border-color: v-bind(themeStyle.warning);
   color: v-bind(themeStyle.warning);
-
 }
 
-.add-travel__btn--submit {
+.btn--submit {
   border-color: v-bind(themeStyle.primary);
   color: v-bind(themeStyle.primary);
-
 }
 </style>

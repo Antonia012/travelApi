@@ -5,36 +5,36 @@ export default class extends BaseSeeder {
   async run() {
     await City.createMany([
       {
+        country_id: 1,
         name: 'Bratislava',
-        countryId: 1,
       },
       {
+        country_id: 1,
         name: 'Košice',
-        countryId: 1,
       },
       {
+        country_id: 3,
         name: 'Brno',
-        countryId: 3,
       },
       {
+        country_id: 3,
         name: 'Praha',
-        countryId: 3,
       },
       {
+        country_id: 3,
         name: 'Ostrava',
-        countryId: 3,
       },
       {
+        country_id: 2,
         name: 'Budapest',
-        countryId: 2,
       },
       {
+        country_id: 4,
         name: 'Krakow',
-        countryId: 4,
       },
       {
+        country_id: 4,
         name: 'Warsaw',
-        countryId: 4,
       },
     ])
   }

@@ -21,10 +21,28 @@ body {
   }
 }
 
-.container__header {
+.container__title {
+  font-size: 28px;
   margin: 20px auto 20px;
 }
 
-.container__title {
-  margin-bottom: 10px ;
+.container__subtitle {
+  font-size: 24px;
+  margin-bottom: 10px;
 }
+
+.btn {
+  border: 2px solid black;
+  color: black;
+
+  padding: 9px 15px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.btn:hover {
+  border-width: 3px;
+  padding: 8px 14px;
+}
+

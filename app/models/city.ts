@@ -3,11 +3,11 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class City extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare city_id: number
 
   @column()
   name: string
 
   @column()
-  countryId: string
+  country_id: string
 }

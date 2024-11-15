@@ -30,30 +30,37 @@ onMounted(() => {
 <template>
   <Head title="Travel Map - My Travels" />
   <Nav />
-  <div :style="themeStyle" class="app-container">
-    <h1>My Travels</h1>
 
-    <a href="/addtravel" :style="{ borderColor: themeStyle.accent }">Add New Travel</a>
+  <body :style="themeStyle">
+    <div class="container">
+      <div class="my-travels__header">
+        <div class="container__title">My Travels:</div>
+        <a href="/addtravel" class="btn btn--add-travel">Add New Travel</a>
+      </div>
 
-    <ul>
-      <TravelPost v-for="post in travelPosts" :key="post.id" :post="post" viewMode="edit" />
-    </ul>
+      <ul>
+        <TravelPost v-for="post in travelPosts" :key="post.id" :post="post" viewMode="edit" />
+      </ul>
 
-    <div v-if="travelPosts.length === 0">
-      <p>No travel posts available. Please add some!</p>
+      <div v-if="travelPosts.length === 0">
+        <p>No travel posts available. Please add some!</p>
+      </div>
     </div>
-  </div>
+  </body>
 </template>
 
 <style scoped>
-/* Add any styles you want here */
-.app-container {
-  min-height: 100vh;
+.my-travels__header{
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-h1 {
-  font-size: 2em;
-  margin-bottom: 20px;
+.btn--add-travel{
+  border-color: v-bind(themeStyle.accent);
+  color: v-bind(themeStyle.color);
 }
 
 ul {
@@ -61,16 +68,4 @@ ul {
   padding: 0;
 }
 
-a {
-  display: inline-block;
-  margin-bottom: 20px;
-  padding: 10px 15px;
-  border-width: 2px;
-  border-radius: 5px;
-  text-decoration: none;
-}
-
-a:hover {
-  background-color: v-bind(themeStyle.accent);
-}
 </style>
