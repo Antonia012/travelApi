@@ -110,7 +110,8 @@ export default class AuthController {
     console.log('logout after', auth.use('web').user)
 
     // return ctx.response.redirect('/about')
-    return response.ok({ message: 'Logged out successfully' })
+    return response.redirect().toRoute('home')
+    // return response.ok({ message: 'Logged out successfully' })
   }
 
   async getUser(ctx: HttpContextContract) {

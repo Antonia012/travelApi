@@ -17,20 +17,20 @@ export const darkPalette = {
 };
 */
 export const lightPalette = {
-  background: '#FBFBFE',
-  text: '#473C33',
-  primary: '#638d5e',
-  secondary: '#FEC767',
-  accent: '#EBCBB4',
-  warning: '#9A031E',
+  background: '#e1f6e1',
+  text: '#5D737E',
+  primary: '#e1f6e1',
+  secondary: '#7FC6A4',
+  accent: '#F4B886',
+  warning: '#91431b',
 }
 
 export const darkPalette = {
-  background: '#010104',
-  text: '#CCC1B8',
-  primary: '#638d5e',
-  secondary: '#EABE72',
-  accent: '#CAA180',
+  background: '#5D737E',
+  text: '#e1f6e1',
+  primary: '#e1f6e1',
+  secondary: '#7FC6A4',
+  accent: '#F4B886',
   warning: '#9A031E',
 }
 

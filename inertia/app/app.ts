@@ -4,6 +4,9 @@ import axios from 'axios'
 import store from '~/css/themeStore' // Import the Vuex store (ensure it's defined)
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import auth from '#config/auth'
+import LayoutUser from '~/pages/components/layoutUser.vue'
+import LayoutGuest from '~/pages/components/layoutGuest.vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -27,13 +30,28 @@ axios.interceptors.request.use(
 
 // Create the Inertia app
 createInertiaApp({
-  progress: { color: '#5468FF' }, // Loading progress color
+  progress: { background: 'red' }, // Loading progress color
 
   title: (title) => `${title} - ${appName}`, // Title formatting
 
-  resolve: (name) => {
+  resolve: async (name) => {
     // Resolve page components dynamically based on the page name
     return resolvePageComponent(`../pages/${name}.vue`, import.meta.glob('../pages/**/*.vue'))
+
+    // // Resolve page components dynamically based on the page name
+    // const page = await resolvePageComponent(
+    //   `../pages/${name}.vue`,
+    //   import.meta.glob('../pages/**/*.vue')
+    // )
+    // // Determine layout based on authentication
+    // const isLoggedIn = await auth.user // Or use Vuex state or another method to check authentication
+    // console.log(isLoggedIn)
+    //
+    // // Use LayoutUser if logged in, LayoutGuest otherwise
+    // // Assign the layout to the page
+    // // page.default.layout = isLoggedIn ? LayoutUser : LayoutGuest
+    // page.default.layout = LayoutUser
+    // return page
   },
 
   setup({ el, App, props, plugin }) {

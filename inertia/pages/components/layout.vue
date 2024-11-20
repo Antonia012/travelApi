@@ -7,6 +7,7 @@ import { computed, onMounted, ref } from 'vue'
 
 import store from '~/css/themeStore'
 import axios from 'axios'
+import {router} from "@inertiajs/vue3";
 
 // const isLoading = ref(true)
 const userName = ref('')
@@ -17,7 +18,7 @@ const isMenuOpen = computed(() => store.getters.isMenuOpen) // Access via getter
 const isLoggedIn = computed(() => store.state.isLoggedIn) // You can also access it directly as it's reactive
 
 // Function to toggle the theme using Vuex mutation
-function toggleTheme() {
+const toggleTheme = async () => {
   store.commit('toggleTheme')
   localStorage.setItem('theme', store.state.theme) // Save theme in localStorage
 }
@@ -50,7 +51,8 @@ const logout = async () => {
     store.commit('setLoginStatus', false)
 
     localStorage.setItem('isLoggedIn', 'false')
-    // Optionally, redirect to another page or store user session
+
+    await router.get('/')
   } catch (error: any) {
     console.error('Logout failed', error)
   }
@@ -58,46 +60,56 @@ const logout = async () => {
 </script>
 
 <template>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <main :style="themeStyle">
+    <header :style="themeStyle">
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+      <!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
 
-  <!-- Apply theme dynamically to the entire navigation bar -->
-  <div :class="['topnav', { responsive: isMenuOpen }]" :style="themeStyle">
-    <!-- Toggle theme button -->
-    <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
+      <!-- Apply theme dynamically to the entire navigation bar -->
+      <div :class="['topnav', { responsive: isMenuOpen }]" :style="themeStyle">
+        <!-- Toggle theme button -->
+        <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
 
-    <!-- Left section: Navigation links like Discover, About, My Travels (if logged in) -->
-    <div class="nav-left">
-      <a href="/discover" :style="themeStyle">Discover</a>
-      <a href="/about" :style="themeStyle">About</a>
-    </div>
+        <!-- Left section: Navigation links like Discover, About, My Travels (if logged in) -->
+        <div class="nav-left">
+          <a href="/discover" :style="themeStyle">Discover</a>
+          <a href="/about" :style="themeStyle">About</a>
+        </div>
 
-    <!-- Center section: Logo (redirects to home page) -->
-    <div class="nav-center">
-      <a href="/" class="logo">
-        <img src="/resources/img/logo.png" alt="Logo" class="logo-img" />
-      </a>
-    </div>
+        <!-- Center section: Logo (redirects to home page) -->
+        <div class="nav-center">
+          <a href="/" class="logo">
+            <img src="/resources/img/logo.png" alt="Logo" class="logo-img" />
+          </a>
+        </div>
 
-    <!-- Right section: Authentication links and user info -->
-    <div class="nav-right">
-      <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
-      <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
-      <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
-      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle">Log Out</a>
-      <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</span>
-    </div>
+        <!-- Right section: Authentication links and user info -->
+        <div class="nav-right" v-cloak>
+          <template v-if="!isLoggedIn">
+            <a href="/login" class="auth-split" :style="themeStyle">Log In</a>
+            <a href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
+          </template>
+          <template v-else>
+            <a href="/mytravels" :style="themeStyle">My Travels</a>
+            <a @click.prevent="logout" class="auth-split" :style="themeStyle">Log Out</a>
+            <span :style="themeStyle">Welcome, {{ userName }}</span>
+          </template>
+        </div>
 
-    <!-- Mobile Menu Icon -->
-    <a href="javascript:void(0);" class="icon" @click="toggleMenu" :style="themeStyle">
-      <i class="fa fa-bars"></i>
-    </a>
-  </div>
+        <!-- Mobile Menu Icon -->
+        <a href="javascript:void(0);" class="icon" @click="toggleMenu" :style="themeStyle">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+    </header>
+    <article :style="themeStyle">
+      <slot />
+    </article>
+  </main>
 </template>
 
 <style scoped>
-
 /* General Styles for the Navigation Bar */
 .topnav {
   overflow: hidden;
