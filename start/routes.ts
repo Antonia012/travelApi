@@ -15,27 +15,64 @@ const ActivitiesController = () => import('#controllers/activities_controller')
 const TravelPostsController = () => import('#controllers/travel_posts_controller')
 const AuthController = () => import('#controllers/auth_controller')
 
-router.on('/').renderInertia('home').as('home')
-router.on('/about').renderInertia('about').as('about')
-router.on('/discover').renderInertia('discover').as('discover')
-
-router.on('/addtravel').renderInertia('addtravel')
-router.group(() => {
-  router.on('/signup').renderInertia('auth/signup')
-  router.post('/signup', [AuthController, 'register'])
-  router.on('/login').renderInertia('auth/login').as('login.index')
-  router.post('/login', [AuthController, 'store']).as('login.store')
-})
-router.post('/logout', [AuthController, 'logout'])
+router
+  .get('/', async ({ inertia }) => {
+    return inertia.render('home')
+  })
+  .as('home')
 
 router
-  .on('/mytravels')
-  .renderInertia('mytravels')
+  .get('/about', async ({ inertia }) => {
+    return inertia.render('about')
+  })
+  .as('about')
+
+router
+  .get('/discover', async ({ inertia }) => {
+    return inertia.render('discover')
+  })
+  .as('discover')
+
+router
+  .get('/addtravel', async ({ inertia }) => {
+    return inertia.render('addtravel')
+  })
   .use(
     middleware.auth({
       guards: ['web'],
     })
   )
+  .as('addtravel')
+router.group(() => {
+  router
+    .get('/signup', async ({ inertia }) => {
+      return inertia.render('auth/signup')
+    })
+    .as('signup.index')
+
+  router.post('/signup', [AuthController, 'register']).as('signup.register')
+
+  router
+    .get('/login', async ({ inertia }) => {
+      return inertia.render('auth/login')
+    })
+    .as('login.index')
+
+  router.post('/login', [AuthController, 'store']).as('login.store')
+})
+
+router.post('/logout', [AuthController, 'logout']).as('logout')
+
+router
+  .get('/mytravels', async ({ inertia }) => {
+    return inertia.render('mytravels')
+  })
+  .use(
+    middleware.auth({
+      guards: ['web'],
+    })
+  )
+  .as('mytravels')
 
 router.get('/countries', [CountriesController, 'index']).use(
   middleware.auth({
@@ -59,7 +96,21 @@ router.post('/travelposts', [TravelPostsController, 'store']).use(
     guards: ['web'],
   })
 )
+
 router.get('/travelposts/count', [TravelPostsController, 'count'])
+
+router.get('/travelposts/:id', [TravelPostsController, 'show'])
+router.put('/travelposts/:id', [TravelPostsController, 'updatePost']).use(
+  middleware.auth({
+    guards: ['web'],
+  })
+)
+
+router.delete('/travelposts/:id', [TravelPostsController, 'destroyPost']).use(
+  middleware.auth({
+    guards: ['web'],
+  })
+)
 
 router.get('/user', [AuthController, 'getUser']).use(
   middleware.auth({

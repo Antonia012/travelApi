@@ -6,6 +6,9 @@ export default class TravelPost extends BaseModel {
   declare id: number
 
   @column()
+  username: string
+
+  @column()
   title: string
 
   @column()
@@ -25,4 +28,7 @@ export default class TravelPost extends BaseModel {
 
   @column()
   checkedItems: boolean[]
+
+  @column()
+  created: DateTime
 }

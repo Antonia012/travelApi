@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import Nav from './components/nav.vue'
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import store from '~/css/themeStore'
+
+const userName = ref('')
+let getNewPostId = ref('')
+// const response = await axios.get('/user')
+// userName.value = response.data.username
 
 const title = ref('') // New ref for title
 const about = ref('') // New ref for about
@@ -73,12 +78,31 @@ const fetchActivities = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   fetchCountries()
   fetchCities()
   fetchActivities()
 
   store.dispatch('loadThemeFromLocalStorage')
+
+  try {
+    const response = await axios.get('/user')
+    userName.value = response.data.username
+    console.log('sdfsdf', userName)
+  } catch (error) {
+    console.error('Failed to fetch user details', error)
+  }
+
+  try {
+    // Fetch the max ID from the backend
+    const response = await axios.get('/travelposts/count'); // Your backend route for max id
+    console.log('Max ID response:', response.data);
+    const maxId = response.data.maxId || 0; // If no posts exist, set maxId to 0
+    getNewPostId = maxId + 1; // New ID will be the largest ID + 1
+    console.log('New post ID:', getNewPostId);
+  } catch (error) {
+    console.error('Error fetching max ID:', error);
+  }
 })
 
 // Filter countries based on user input
@@ -107,7 +131,7 @@ const addCountry = (country) => {
   // Check if the country is in the filtered list before adding
   if (
     country &&
-    !selectedCountries.value.some((c) => c.id === country.id) &&
+    !selectedCountries.value.some((c) => c.countryId === country.countryId) &&
     filteredCountries.value.includes(country)
   ) {
     selectedCountries.value.push(country)
@@ -118,7 +142,7 @@ const addCountry = (country) => {
 const addCity = (city) => {
   if (
     city &&
-    !selectedCities.value.some((c) => c.id === city.id) &&
+    !selectedCities.value.some((c) => c.cityId === city.cityId) &&
     filteredCities.value.includes(city)
   ) {
     selectedCities.value.push(city)
@@ -129,7 +153,7 @@ const addCity = (city) => {
 const addActivity = (activity) => {
   if (
     activity &&
-    !selectedActivities.value.some((c) => c.id === activity.id) &&
+    !selectedActivities.value.some((a) => a.activityId === activity.activityId) &&
     filteredActivities.value.includes(activity)
   ) {
     selectedActivities.value.push(activity)
@@ -154,13 +178,15 @@ const removeActivity = (index: number) => {
 
 defineProps(['countries'])
 
+
+
 const submitForm = async () => {
   console.log('Submit Form Called')
 
   // Extract IDs for countries, cities, and activities
-  const countryIds = selectedCountries.value.map((country) => country.id)
-  const cityIds = selectedCities.value.map((city) => city.id)
-  const activityIds = selectedActivities.value.map((activity) => activity.id)
+  const countryIds = selectedCountries.value.map((country) => country.countryId)
+  const cityIds = selectedCities.value.map((city) => city.cityId)
+  const activityIds = selectedActivities.value.map((activity) => activity.activityId)
 
   // Create arrays for todo items and their completion status
   const todoItems = todos.value.map((todo) => todo.task) // Extract task text
@@ -168,12 +194,15 @@ const submitForm = async () => {
 
   try {
     // Fetch the count of travel posts
-    const countResponse = await axios.get('/travelposts/count')
-    const newId = countResponse.data.total > 0 ? Number(countResponse.data.total) + 1 : 1 // Ensure total is treated as a number
+    // const responsePosts = await axios.get('/travelposts')
+    // const countResponse = responsePosts.data.length
+    // console.log(responsePosts.data.length)
+    // const newId = countResponse > 0 ? Number(countResponse) + 1 : 1 // Ensure total is treated as a number
 
     // Make the POST request with the new ID and todo information
     const response = await axios.post('/travelposts', {
-      id: newId,
+      id: getNewPostId,
+      username: userName.value,
       title: title.value,
       countries: countryIds,
       cities: cityIds,
@@ -181,9 +210,11 @@ const submitForm = async () => {
       about: about.value,
       todoItems: todoItems, // Array of to-do item texts
       checkedItems: checkedItems, // Array of completion statuses
+      created:  new Date().toISOString(),
     })
 
     console.log('Travel post created:', response.data)
+    await router.get('/mytravels')
   } catch (error) {
     console.error('Error saving travel post:', error)
   }
@@ -194,7 +225,7 @@ const submitForm = async () => {
   <Head title="Travel Map - Add Travel" />
   <Nav />
 
-  <body :style="themeStyle">
+  <div class="app__container" :style="themeStyle">
     <div class="container">
       <form class="add-travel" @submit.prevent="submitForm">
         <div class="container__title">Plan new travel</div>
@@ -357,7 +388,7 @@ const submitForm = async () => {
         </div>
       </form>
     </div>
-  </body>
+  </div>
 </template>
 
 <style scoped>
@@ -366,15 +397,16 @@ const submitForm = async () => {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  width: 100%;
+  //width: 100%;
 
-  border: 2px solid v-bind(themeStyle.accent);
-  box-shadow:
-    0 2px 16px v-bind(themeStyle.accent),
-    0 0 0 2px v-bind(themeStyle.accent);
+  border: 0 solid v-bind(themeStyle.color);
+  box-shadow: 19px 22px 41px v-bind(themeStyle.color);
 
   border-radius: 32px;
   padding: 30px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
 }
 
 input {
@@ -382,7 +414,7 @@ input {
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 2px solid v-bind(themeStyle.primary);
+  border: 2px solid v-bind(themeStyle.secondary);
   box-sizing: border-box;
   border-radius: 16px;
   background: v-bind(themeStyle.backgroundColor);
@@ -448,7 +480,7 @@ input {
   position: absolute;
   z-index: 10;
   width: 100%;
-  border: 2px solid v-bind(themeStyle.accent);
+  border: 2px solid v-bind(themeStyle.secondary);
   border-radius: 16px;
   background-color: v-bind(themeStyle.backgroundColor);
   margin-top: 70px;
@@ -485,8 +517,8 @@ ul {
 }
 
 .add-travel__checkbox {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   transform: scale(1.5);
   border: 2px solid v-bind(themeStyle.accent);
   border-radius: 5px;
@@ -495,7 +527,7 @@ ul {
   cursor: pointer;
   outline: none;
   padding: 0;
-  margin: 20px 10px;
+  margin: 10px;
 }
 
 .add-travel__checkbox:checked {
@@ -517,8 +549,8 @@ ul {
 }
 
 .btn--add-todo {
-  border: 2px solid v-bind(themeStyle.primary);
-  color: v-bind(themeStyle.primary);
+  border: 2px solid v-bind(themeStyle.secondary);
+  color: v-bind(themeStyle.color);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -536,7 +568,7 @@ ul {
 }
 
 .btn--submit {
-  border-color: v-bind(themeStyle.primary);
-  color: v-bind(themeStyle.primary);
+  border-color: v-bind(themeStyle.secondary);
+  color: v-bind(themeStyle.color);
 }
 </style>

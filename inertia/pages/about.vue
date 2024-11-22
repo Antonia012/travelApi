@@ -16,57 +16,49 @@ onMounted(() => {
 <template>
   <!-- Apply theme to the entire body or root div -->
   <Head title="Travel Map" />
-
   <Nav />
-  <div :style="themeStyle" class="app-container">
-    <!-- Apply theme dynamically to the about-container -->
-    <div class="about-container" :style="themeStyle">
-      <h1>About This Project</h1>
-      <p>
-        This is a student project designed for travel enthusiasts to share their experiences and
-        inspire others. The main goal is to create a platform where people can post their travel
-        adventures and plan future trips.
-      </p>
 
-      <h2>Features</h2>
-      <ul>
-        <li>
-          <strong>Travel Posts:</strong> Each travel post acts like a to-do list, consisting of:
-          <ul>
-            <li><strong>Header:</strong> The visited place</li>
-            <li><strong>Description:</strong> A paragraph explaining the travel experience</li>
-          </ul>
-        </li>
-        <li>
-          <strong>Mark Your Travels:</strong> Users can mark places they've visited, allowing them
-          to keep track of their adventures.
-        </li>
-        <li>
-          <strong>Planning Tool:</strong> The site will generate suggestions for places you haven't
-          visited, based on other users' travels that are near your intended destination.
-        </li>
-      </ul>
+  <div class="app__container" :style="themeStyle">
+    <div class="container">
+      <div class="about__section">
+        <h1>About This Project</h1>
+        <p>
+          This is a student project designed for travel enthusiasts to share their experiences and
+          inspire others. The main goal is to create a platform where people can post their travel
+          adventures and plan future trips.
+        </p>
 
-      <h2>Join Our Community!</h2>
-      <p>
-        Share your stories, get inspired by fellow travelers, and make your travel plans more
-        exciting and organized. Together, we can explore the world one post at a time!
-      </p>
+        <h2>Features</h2>
+        <ul>
+          <li>
+            <strong>Travel Posts:</strong> Each travel post acts like a to-do list, consisting of:
+            <ul>
+              <li><strong>Header:</strong> The visited place</li>
+              <li><strong>Description:</strong> A paragraph explaining the travel experience</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Mark Your Travels:</strong> Users can mark places they've visited, allowing them
+            to keep track of their adventures.
+          </li>
+          <li>
+            <strong>Planning Tool:</strong> The site will generate suggestions for places you
+            haven't visited, based on other users' travels that are near your intended destination.
+          </li>
+        </ul>
+
+        <h2>Join Our Community!</h2>
+        <p>
+          Share your stories, get inspired by fellow travelers, and make your travel plans more
+          exciting and organized. Together, we can explore the world one post at a time!
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.app-container {
-  min-height: 100vh; /* Make sure the container covers the full viewport height */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Align the content at the top */
-  padding: 0;
-  margin: 0;
-}
-
-.about-container {
+.about__section {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;

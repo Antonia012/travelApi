@@ -2,11 +2,19 @@ import { HttpContext } from '@adonisjs/core/http'
 
 import db from '@adonisjs/lucid/services/db'
 import TravelPost from '#models/travel_post'
+import { column } from '@adonisjs/lucid/orm'
 
 export default class TravelPostsController {
   async index({ response }: HttpContext) {
     try {
       const posts = await TravelPost.all()
+
+      const result = await db.from('travel_posts').max('id')
+      console.log(result)
+      // If there are no records, the max ID will be null, so default to 0
+      const maxId = result[0].max ?? 0
+      console.log('Max ID:', maxId)
+
       return response.json(posts) // Return the posts as a JSON response
     } catch (error) {
       console.error('Error fetching travel posts:', error) // Log the error
@@ -19,6 +27,7 @@ export default class TravelPostsController {
     // Extract data from the request, including the id
     const data = request.only([
       'id',
+      'username',
       'title',
       'countries',
       'cities',
@@ -26,6 +35,7 @@ export default class TravelPostsController {
       'about',
       'todoItems',
       'checkedItems',
+      'created',
     ])
     try {
       // Insert the new travel post into the database, assuming 'id' is provided in the data
@@ -44,14 +54,64 @@ export default class TravelPostsController {
   // Count the number of travel posts
   async count({ response }: HttpContext) {
     try {
-      const total = await db.from('travel_posts').count('* as total')
-
-      const recordCount = total.length > 0 ? total[0].total : 0
-
-      return response.json({ total: recordCount })
+      const result = await db.from('travel_posts').max('id')
+      console.log(result)
+      // If there are no records, the max ID will be null, so default to 0
+      const maxId = result[0]?.max ?? 0
+      console.log('Max ID:', maxId)
+      return response.json({ maxId })
     } catch (error) {
-      console.error('Error fetching travel post count:', error)
-      return response.status(500).send('Internal Server Error')
+      console.error('Error getting maximum id:', error)
+      return response.status(400).send('Failed to get maximum id')
+    }
+  }
+
+  // Show a specific travel post by its ID
+  async show({ params, response }: HttpContext) {
+    // const { id } = params
+    // try {
+    //   const travelPost = await db.from('travel_posts').where('id', id).first()
+    //   if (travelPost) {
+    //     return response.json(travelPost)
+    //   } else {
+    //     return response.status(404).send('Travel post not found')
+    //   }
+    // } catch (error) {
+    //   console.error('Error fetching travel post:', error)
+    //   return response.status(500).send('Internal Server Error')
+    // }
+  }
+
+  async updatePost({ request, response }: HttpContext) {
+    // const data = request.only([
+    //   'id',
+    //   'title',
+    //   'countries',
+    //   'cities',
+    //   'activities',
+    //   'about',
+    //   'todoItems',
+    //   'checkedItems',
+    //   'created',
+    // ])
+    // try {
+    //   await db.from('travel_posts').where('id', data.id).update(data)
+    //   const travelPost = await db.from('travel_posts').where('id', data.id).first()
+    //   return response.json(travelPost)
+    // } catch (error) {
+    //   console.error('Error updating travel post:', error)
+    //   return response.status(400).send('Failed to update travel post')
+    // }
+  }
+
+  async destroyPost({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      await db.from('travel_posts').where('id', id).delete()
+      return response.status(204).send()
+    } catch (error) {
+      console.error('Error deleting travel post:', error)
+      return response.status(400).send('Failed to delete travel post')
     }
   }
 }

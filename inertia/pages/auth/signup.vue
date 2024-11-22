@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import { ref, onMounted, computed } from 'vue'
 import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
@@ -23,7 +23,7 @@ const errorMessage = ref('')
 const register = async () => {
   errorMessage.value = '' // Clear any previous error messages
   try {
-    const response = await axios.post('http://localhost:3000/signup', {
+    const response = await axios.post('/signup', {
       username: username.value,
       email: email.value,
       password: password.value,
@@ -32,6 +32,7 @@ const register = async () => {
     console.log(password.value)
 
     console.log('Registration successful', response.data)
+    await router.get('/login')
     // Optionally, redirect to login or another page
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || 'Registration failed'
@@ -44,117 +45,93 @@ const register = async () => {
   <Head title="Travel Map - Sign Up" />
   <Nav />
 
-  <div class="outer-signup-container" :style="themeStyle">
-    <form class="signup-container" @submit.prevent="register" method="post">
-      <h2>Sign Up Form</h2>
+  <div class="app__container" :style="themeStyle">
+    <div class="container">
+      <form class="signup__section" @submit.prevent="register" method="post">
+        <div class="container__subtitle">Sign Up Form</div>
 
-      <!-- Form Fields -->
-      <div class="signup-container-data">
-        <label for="uname"><b>Username</b></label>
-        <input
-          :style="{ background: themeStyle.backgroundColor }"
-          type="text"
-          placeholder="Enter Username"
-          v-model="username"
-          required
-        />
+        <div class="p16">
+          <div class="signup__item">
+            <label for="uname"><b>Username</b></label>
+            <input
+              :style="{ background: themeStyle.backgroundColor }"
+              type="text"
+              placeholder="Enter Username"
+              v-model="username"
+              required
+            />
+          </div>
 
-        <label for="email"><b>Email</b></label>
-        <input
-          :style="{ background: themeStyle.backgroundColor }"
-          type="email"
-          v-model="email"
-          required
-        />
+          <div class="signup__item">
+            <label for="email"><b>Email</b></label>
+            <input
+              :style="{ background: themeStyle.backgroundColor }"
+              type="email"
+              placeholder="Enter Email"
+              v-model="email"
+              required
+            />
+          </div>
 
-        <label for="psw"><b>Password</b></label>
-        <input
-          :style="{ background: themeStyle.backgroundColor }"
-          type="password"
-          placeholder="Enter Password"
-          v-model="password"
-          required
-        />
+          <div class="signup__item">
+            <label for="psw"><b>Password</b></label>
+            <input
+              :style="{ background: themeStyle.backgroundColor }"
+              type="password"
+              placeholder="Enter Password"
+              v-model="password"
+              required
+            />
+          </div>
 
-        <!-- Button with dynamic theme styling -->
-        <button type="submit" :style="{ backgroundColor: themeStyle.primary }">Sign Up</button>
-      </div>
+          <div class="pos-center">
+            <button type="submit" class="btn btn--submit">Sign Up</button>
+          </div>
+        </div>
 
-      <!-- Error Message Display -->
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-      <!-- Footer with cancel button and password link -->
-      <div class="signup-ftr-container">
-        <button type="button" class="cancelbtn" :style="{ backgroundColor: themeStyle.secondary }">
-          Cancel
-        </button>
-        <span class="psw">Forgot <a href="#">password?</a></span>
-      </div>
-    </form>
+        <div class="signup-ftr-container pos-right">
+          <!--          <button-->
+          <!--            type="button"-->
+          <!--            class="btn btn&#45;&#45;cancel"-->
+          <!--            :style="{ backgroundColor: themeStyle.secondary }"-->
+          <!--          >-->
+          <!--            Cancel-->
+          <!--          </button>-->
+          <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* Styling for the signup form */
-.outer-signup-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: calc(100vh - 60px); /* Adjust based on nav bar height */
-  padding-top: 20px;
-}
+.signup__section {
+  justify-self: center;
+  border: 1px solid v-bind(themeStyle.color);
+  box-shadow: 0 2px 16px v-bind(themeStyle.color);
+  border-radius: 32px;
 
-.signup-container {
-  border: 1px solid #939090;
   padding: 30px;
   width: 100%;
   max-width: 400px;
   margin-top: 20px;
 }
 
-input[type='text'],
-input[type='password'],
-input[type='email'] {
+input {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid #ccc;
+  border: 2px solid v-bind(themeStyle.secondary);
   box-sizing: border-box;
-}
-
-button {
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  color: white;
-  border: none;
-  cursor: pointer;
+  border-radius: 16px;
+  background: v-bind(themeStyle.backgroundColor);
 }
 
 .signup-ftr-container {
   margin-top: 16px;
-}
-
-.signup-container-data {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
 }
 
 .error-message {
@@ -163,14 +140,12 @@ span.psw {
   margin-top: 10px;
 }
 
-@media screen and (max-width: 300px) {
-  span.psw {
-    display: block;
-    float: none;
-  }
+.btn--submit {
+  border-color: v-bind(themeStyle.secondary);
+  color: v-bind(themeStyle.color);
+}
 
-  .cancelbtn {
-    width: 100%;
-  }
+.signup__item {
+  margin: 1rem auto;
 }
 </style>

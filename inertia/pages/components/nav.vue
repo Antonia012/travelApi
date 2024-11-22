@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import logo from "/resources/img/logo.png"
 //import { useStore } from 'vuex'; // Import the Vuex store instance
 
 // Access the Vuex store
@@ -7,6 +8,7 @@ import { computed, onMounted, ref } from 'vue'
 
 import store from '~/css/themeStore'
 import axios from 'axios'
+import { router } from "@inertiajs/vue3";
 
 // const isLoading = ref(true)
 const userName = ref('')
@@ -33,7 +35,7 @@ onMounted(async () => {
   // isLoading.value = false
 
   try {
-    const response = await axios.get('http://localhost:3000/user')
+    const response = await axios.get('/user')
     userName.value = response.data.username
     console.log('sdfsdf', userName)
   } catch (error) {
@@ -43,13 +45,15 @@ onMounted(async () => {
 
 const logout = async () => {
   try {
-    const response = await axios.post('http://localhost:3000/logout')
+    const response = await axios.post('/logout')
 
     console.log('Logout successful', response.data)
 
     store.commit('setLoginStatus', false)
 
     localStorage.setItem('isLoggedIn', 'false')
+
+    await router.get('/discover')
     // Optionally, redirect to another page or store user session
   } catch (error: any) {
     console.error('Logout failed', error)
@@ -76,7 +80,7 @@ const logout = async () => {
     <!-- Center section: Logo (redirects to home page) -->
     <div class="nav-center">
       <a href="/" class="logo">
-        <img src="/resources/img/logo.png" alt="Logo" class="logo-img" />
+        <img :src="logo" alt="Logo" class="logo-img" />
       </a>
     </div>
 
