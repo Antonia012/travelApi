@@ -102,17 +102,19 @@ router.get('/travelposts/count', [TravelPostsController, 'count'])
 router.get('/travelposts/viewpost', [TravelPostsController, 'show']).as('post.view')
 
 router.get('/travelposts/:id', [TravelPostsController, 'show']).as('post.show')
+
 router.put('/travelposts/:id', [TravelPostsController, 'updatePost']).use(
   middleware.auth({
     guards: ['web'],
   })
 )
-
 router.delete('/travelposts/:id', [TravelPostsController, 'destroyPost']).use(
   middleware.auth({
     guards: ['web'],
   })
 )
+
+router.get('/travelposts/user/:username', [TravelPostsController, 'userPosts'])
 
 router.get('/user', [AuthController, 'getUser']).use(
   middleware.auth({

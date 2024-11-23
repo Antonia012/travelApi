@@ -86,7 +86,7 @@ onMounted(() => {
       {{ getNamesFromIds(post?.activities || [], activities).join(', ') || 'No activities' }}
     </p>
 
-    <div class="travel-post__todo">
+    <!--<div class="travel-post__todo">
       <p class="travel-post__paragraph"><b>Todo List:</b></p>
       <ul v-if="post?.todoItems?.length > 0">
         <li v-for="(item, index) in post.todoItems" :key="index">
@@ -102,7 +102,7 @@ onMounted(() => {
         </li>
       </ul>
       <p v-else>No items in the todo list.</p>
-    </div>
+    </div>-->
 
     <div class="pos-right">
       <div class="travel-post__buttons">

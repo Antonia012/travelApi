@@ -10,13 +10,15 @@ const travelPosts = ref([])
 const cities = ref([])
 const countries = ref([])
 const activities = ref([])
+const username = ref('')
 
 // Access the Vuex store for theme styles
 const themeStyle = computed(() => store.getters.themeStyle)
 // Function to fetch travel posts from the server
 const fetchTravelPosts = async () => {
   try {
-    const response = await axios.get('/travelposts')
+    console.log('userName', username.value)
+    const response = await axios.get(`/travelposts/user/${username.value}`, { params: { id: username.value} })
     travelPosts.value = response.data
   } catch (error) {
     console.error('Error fetching travel posts:', error)
@@ -55,12 +57,20 @@ function refreshPage() {
 }
 
 // Fetch travel posts when the component is mounted
-onMounted(() => {
+onMounted(async () => {
+  store.dispatch('loadThemeFromLocalStorage')
+
+  try {
+    const response = await axios.get('/user')
+    username.value = response.data.username
+    console.log('sdfsdf', username.value)
+  } catch (error) {
+    console.error('Failed to fetch user details', error)
+  }
   fetchTravelPosts()
   fetchCities()
   fetchCounties()
   fetchActivites()
-  store.dispatch('loadThemeFromLocalStorage')
 })
 </script>
 
