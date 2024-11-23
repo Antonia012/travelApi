@@ -56,6 +56,12 @@ function refreshPage() {
   router.reload()
 }
 
+const handleEditPost = async (postId) => {
+  // Navigate to a new page with the post data passed as route state
+  console.log('Editing post:', postId)
+  router.get(`/travelposts/${postId}`, { id: postId, edit: true} )
+};
+
 // Fetch travel posts when the component is mounted
 onMounted(async () => {
   store.dispatch('loadThemeFromLocalStorage')
@@ -96,6 +102,7 @@ onMounted(async () => {
             :activities="activities"
             class="mtb10"
             @post-deleted="refreshPage"
+            @edit-post="handleEditPost(post.id)"
           />
         </ul>
       </div>

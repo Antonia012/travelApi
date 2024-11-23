@@ -106,7 +106,7 @@ onMounted(() => {
 
     <div class="pos-right">
       <div class="travel-post__buttons">
-        <button class="btn btn--travel-post" v-if="viewMode === 'edit'" @click="editPost">
+        <button class="btn btn--travel-post" v-if="viewMode === 'edit'" @click="$emit('editPost')">
           Edit
         </button>
         <button

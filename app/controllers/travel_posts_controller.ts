@@ -61,13 +61,13 @@ export default class TravelPostsController {
 
   // Show a specific travel post by its ID
   async show({ request, response, inertia }: HttpContext) {
-    const data = request.only(['id'])
+    const data = request.only(['id', 'edit'])
     console.log('Data:', data)
     try {
       const travelPost = await db.from('travel_posts').where('id', data.id).first()
       if (travelPost) {
         // Render the Inertia page for the travel post
-        return inertia.render('viewpost', { travelPost })
+        return inertia.render('viewpost', { travelPost, edit: data.edit })
       } else {
         return response.status(404).send('Travel post not found')
       }
@@ -99,25 +99,23 @@ export default class TravelPostsController {
   }
 
   async updatePost({ request, response }: HttpContext) {
-    // const data = request.only([
-    //   'id',
-    //   'title',
-    //   'countries',
-    //   'cities',
-    //   'activities',
-    //   'about',
-    //   'todoItems',
-    //   'checkedItems',
-    //   'created',
-    // ])
-    // try {
-    //   await db.from('travel_posts').where('id', data.id).update(data)
-    //   const travelPost = await db.from('travel_posts').where('id', data.id).first()
-    //   return response.json(travelPost)
-    // } catch (error) {
-    //   console.error('Error updating travel post:', error)
-    //   return response.status(400).send('Failed to update travel post')
-    // }
+    const data = request.only([
+      'title',
+      'countries',
+      'cities',
+      'activities',
+      'about',
+      'todoItems',
+      'checkedItems',
+    ])
+    try {
+      await db.from('travel_posts').where('id', data.id).update(data)
+      const travelPost = await db.from('travel_posts').where('id', data.id).first()
+      return response.json(travelPost)
+    } catch (error) {
+      console.error('Error updating travel post:', error)
+      return response.status(400).send('Failed to update travel post')
+    }
   }
 
   async destroyPost({ params, response }: HttpContext) {

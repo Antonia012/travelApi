@@ -52,7 +52,7 @@ const fetchActivites = async () => {
 const handleViewMore = async (postId) => {
   // Navigate to a new page with the post data passed as route state
   console.log('Viewing post:', postId)
-  router.get(`/travelposts/${postId}`, { id: postId} )
+  router.get(`/travelposts/${postId}`, { id: postId, edit: false} )
 };
 
 
