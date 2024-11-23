@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, defineProps, onMounted, ref } from 'vue'
-import store from '~/css/themeStore'
-import axios from 'axios'
-import { DateTime } from 'luxon'
-import { format } from 'date-fns'
+import { computed, defineProps, onMounted } from "vue";
+import store from "~/css/themeStore";
+import axios from "axios";
+import { router } from "@inertiajs/vue3";
+import { DateTime } from "luxon";
+import { format } from "date-fns";
 
-const themeStyle = computed(() => store.getters.themeStyle)
+const themeStyle = computed(() => store.getters.themeStyle);
 
-let response
+let response;
 
 const props = defineProps<{
   post: {
@@ -21,23 +22,23 @@ const props = defineProps<{
     todoItems: string[]
     checkedItems: boolean[]
   } | null
-  viewMode: 'edit' | 'view' // New prop for view mode
+  viewMode: "edit" | "view" // New prop for view mode
   countries: { id: number; name: string }[]
   cities: { id: number; name: string }[]
   activities: { id: number; name: string }[]
-}>()
+}>();
 
 const getNamesFromIds = (ids: { id: number }[], dataArray: { id: number; name: string }[]) => {
   return ids
     .map((idObj) => {
-      const item = dataArray.find((data) => data.id === idObj.id)
-      return item ? item.name : null
+      const item = dataArray.find((data) => data.id === idObj.id);
+      return item ? item.name : null;
     })
-    .filter((name) => name !== null)
-}
+    .filter((name) => name !== null);
+};
 
 function formatDate(dateString) {
-  return format(new Date(dateString), 'dd MMM yyyy')
+  return format(new Date(dateString), "dd MMM yyyy");
 }
 
 const deletePost = async (postId) => {
@@ -47,20 +48,20 @@ const deletePost = async (postId) => {
 
     if (response.status === 204) {
       // Successfully deleted
-      console.log('Post deleted successfully');
+      console.log("Post deleted successfully");
       // You can remove the post from the UI or trigger a refresh
-      this.$emit('post-deleted', true); // Optional: Emit an event to notify the parent component
+      this.$emit("post-deleted", true); // Optional: Emit an event to notify the parent component
     }
   } catch (error) {
-    console.error('Error deleting post:', error);
+    console.error("Error deleting post:", error);
     // Handle the error (display a message or show a toast notification)
   }
-}
+};
 
 // Load the theme from localStorage when the component is mounted
 onMounted(() => {
-  store.dispatch('loadThemeFromLocalStorage')
-})
+  store.dispatch("loadThemeFromLocalStorage");
+});
 </script>
 
 <template>
@@ -108,10 +109,14 @@ onMounted(() => {
         <button class="btn btn--travel-post" v-if="viewMode === 'edit'" @click="editPost">
           Edit
         </button>
-        <button class="btn btn--travel-post" v-if="viewMode === 'edit'" @click="deletePost(post?.id)">
+        <button
+          class="btn btn--travel-post"
+          v-if="viewMode === 'edit'"
+          @click="deletePost(post?.id)"
+        >
           Delete
         </button>
-        <button class="btn btn--travel-post" v-if="viewMode === 'view'" @click="viewMore">
+        <button class="btn btn--travel-post" v-if="viewMode === 'view'" @click="$emit('viewMore')">
           View More
         </button>
       </div>
@@ -147,7 +152,7 @@ onMounted(() => {
 
 .travel-post__title {
   font-size: 20px;
-  margin-left: 1rem
+  margin-left: 1rem;
 }
 
 .travel-post__paragraph {

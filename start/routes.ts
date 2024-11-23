@@ -99,7 +99,9 @@ router.post('/travelposts', [TravelPostsController, 'store']).use(
 
 router.get('/travelposts/count', [TravelPostsController, 'count'])
 
-router.get('/travelposts/:id', [TravelPostsController, 'show'])
+router.get('/travelposts/viewpost', [TravelPostsController, 'show']).as('post.view')
+
+router.get('/travelposts/:id', [TravelPostsController, 'show']).as('post.show')
 router.put('/travelposts/:id', [TravelPostsController, 'updatePost']).use(
   middleware.auth({
     guards: ['web'],

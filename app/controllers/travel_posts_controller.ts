@@ -2,7 +2,6 @@ import { HttpContext } from '@adonisjs/core/http'
 
 import db from '@adonisjs/lucid/services/db'
 import TravelPost from '#models/travel_post'
-import { column } from '@adonisjs/lucid/orm'
 
 export default class TravelPostsController {
   async index({ response }: HttpContext) {
@@ -67,19 +66,21 @@ export default class TravelPostsController {
   }
 
   // Show a specific travel post by its ID
-  async show({ params, response }: HttpContext) {
-    // const { id } = params
-    // try {
-    //   const travelPost = await db.from('travel_posts').where('id', id).first()
-    //   if (travelPost) {
-    //     return response.json(travelPost)
-    //   } else {
-    //     return response.status(404).send('Travel post not found')
-    //   }
-    // } catch (error) {
-    //   console.error('Error fetching travel post:', error)
-    //   return response.status(500).send('Internal Server Error')
-    // }
+  async show({ request, response, inertia }: HttpContext) {
+    const data = request.only(['id'])
+    console.log('Data:', data)
+    try {
+      const travelPost = await db.from('travel_posts').where('id', data.id).first()
+      if (travelPost) {
+        // Render the Inertia page for the travel post
+        return inertia.render('viewpost', { travelPost })
+      } else {
+        return response.status(404).send('Travel post not found')
+      }
+    } catch (error) {
+      console.error('Error fetching travel post:', error)
+      return response.status(500).send('Internal Server Error')
+    }
   }
 
   async updatePost({ request, response }: HttpContext) {

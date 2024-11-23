@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import Nav from './components/nav.vue'
 import axios from 'axios'
 import TravelPost from '~/pages/components/post.vue'
@@ -49,6 +49,13 @@ const fetchActivites = async () => {
   }
 }
 
+const handleViewMore = async (postId) => {
+  // Navigate to a new page with the post data passed as route state
+  console.log('Viewing post:', postId)
+  router.get(`/travelposts/${postId}`, { id: postId} )
+};
+
+
 // Fetch travel posts when the component is mounted
 onMounted(() => {
   store.dispatch('loadThemeFromLocalStorage')
@@ -77,6 +84,7 @@ onMounted(() => {
           :activities="activities"
           class="mtb10"
           :style="themeStyle"
+          @view-more="handleViewMore(post.id)"
         />
       </ul>
     </div>
