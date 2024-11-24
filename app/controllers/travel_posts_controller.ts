@@ -78,7 +78,7 @@ export default class TravelPostsController {
   }
 
   // Show a specific travel post by its ID
-  async userPosts({ params, request, response }: HttpContext) {
+  async userPosts({ params, response }: HttpContext) {
     console.log(params)
     const { username } = params // Extract userId from route parameters
     console.log('User ID:', username)
@@ -100,6 +100,9 @@ export default class TravelPostsController {
 
   async updatePost({ request, response }: HttpContext) {
     const data = request.only([
+      'id',
+      'username',
+      'userOfPost',
       'title',
       'countries',
       'cities',
@@ -108,8 +111,23 @@ export default class TravelPostsController {
       'todoItems',
       'checkedItems',
     ])
+
+    const postData = {
+      id: data.id,
+      title: data.title,
+      countries: data.countries,
+      cities: data.cities,
+      activities: data.activities,
+      about: data.about,
+      todoItems: data.todoItems,
+      checkedItems: data.checkedItems,
+    }
     try {
-      await db.from('travel_posts').where('id', data.id).update(data)
+      if (data.userOfPost !== data.username) {
+        return response.status(403).send('wrong user')
+      }
+
+      await db.from('travel_posts').where('id', data.id).update(postData)
       const travelPost = await db.from('travel_posts').where('id', data.id).first()
       return response.json(travelPost)
     } catch (error) {
@@ -118,9 +136,14 @@ export default class TravelPostsController {
     }
   }
 
-  async destroyPost({ params, response }: HttpContext) {
+  async destroyPost({ params, request, response }: HttpContext) {
     const { id } = params
+    const { username, userOfPost } = request.only(['username', 'userOfPost'])
     try {
+      if (userOfPost !== username) {
+        return response.status(403).send('wrong user')
+      }
+
       await db.from('travel_posts').where('id', id).delete()
       return response.status(204).send()
     } catch (error) {

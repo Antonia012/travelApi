@@ -23,27 +23,41 @@ const fetchTravelPosts = async () => {
   }
 }
 
-const fetchCities = async () => {
-  try {
-    const response = await axios.get('/cities')
-    cities.value = response.data
-  } catch (error) {
-    console.error('Error fetching cities:', error)
-  }
-}
-const fetchCounties = async () => {
+// Fetch countries from the API
+const fetchCountries = async () => {
   try {
     const response = await axios.get('/countries')
-    countries.value = response.data
+    countries.value = response.data.map((country) => ({
+      id: country.countryId,
+      name: country.name,
+    }))
   } catch (error) {
     console.error('Error fetching countries:', error)
   }
 }
 
-const fetchActivites = async () => {
+// Fetch cities from the API
+const fetchCities = async () => {
+  try {
+    const response = await axios.get('/cities')
+    cities.value = response.data.map((city) => ({
+      id: city.cityId,
+      name: city.name,
+    }))
+    console.log('citiessss', response)
+  } catch (error) {
+    console.error('Error fetching cities:', error)
+  }
+}
+
+// Fetch activities from the API
+const fetchActivities = async () => {
   try {
     const response = await axios.get('/activities')
-    activities.value = response.data
+    activities.value = response.data.map((activity) => ({
+      id: activity.activityId,
+      name: activity.name,
+    }))
   } catch (error) {
     console.error('Error fetching activities:', error)
   }
@@ -61,8 +75,8 @@ onMounted(() => {
   store.dispatch('loadThemeFromLocalStorage')
   fetchTravelPosts()
   fetchCities()
-  fetchCounties()
-  fetchActivites()
+  fetchCountries()
+  fetchActivities()
 })
 </script>
 

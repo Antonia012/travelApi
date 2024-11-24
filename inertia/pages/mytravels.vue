@@ -25,28 +25,41 @@ const fetchTravelPosts = async () => {
   }
 }
 
-const fetchCities = async () => {
-  try {
-    const response = await axios.get('/cities')
-    cities.value = response.data
-  } catch (error) {
-    console.error('Error fetching cities:', error)
-  }
-}
-
-const fetchCounties = async () => {
+// Fetch countries from the API
+const fetchCountries = async () => {
   try {
     const response = await axios.get('/countries')
-    countries.value = response.data
+    countries.value = response.data.map((country) => ({
+      id: country.countryId,
+      name: country.name,
+    }))
   } catch (error) {
     console.error('Error fetching countries:', error)
   }
 }
 
-const fetchActivites = async () => {
+// Fetch cities from the API
+const fetchCities = async () => {
+  try {
+    const response = await axios.get('/cities')
+    cities.value = response.data.map((city) => ({
+      id: city.cityId,
+      name: city.name,
+    }))
+    console.log('citiessss', response)
+  } catch (error) {
+    console.error('Error fetching cities:', error)
+  }
+}
+
+// Fetch activities from the API
+const fetchActivities = async () => {
   try {
     const response = await axios.get('/activities')
-    activities.value = response.data
+    activities.value = response.data.map((activity) => ({
+      id: activity.activityId,
+      name: activity.name,
+    }))
   } catch (error) {
     console.error('Error fetching activities:', error)
   }
@@ -73,11 +86,37 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch user details', error)
   }
-  fetchTravelPosts()
-  fetchCities()
-  fetchCounties()
-  fetchActivites()
+  await fetchTravelPosts()
+  await fetchCities()
+  await fetchCountries()
+  await fetchActivities()
 })
+
+
+const handleDeletePost = async (postId, userOfPost) => {
+  try {
+    // Sending DELETE request using axios.delete without the 'method' field
+    const response = await axios.delete(`/travelposts/${postId}`, {username, userOfPost});
+
+    if (response.status === 204) {
+      // Successfully deleted
+      console.log("Post deleted successfully");
+      // You can remove the post from the UI or trigger a refresh
+      // this.$emit("post-deleted", true); // Optional: Emit an event to notify the parent component
+    }
+    travelPosts.value = travelPosts.value.filter((post) => post.id !== postId);
+
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    // Handle the error (display a message or show a toast notification)
+  }
+};
+
+const handleViewMore = async (postId) => {
+  // Navigate to a new page with the post data passed as route state
+  console.log('Viewing post:', postId)
+  router.get(`/travelposts/${postId}`, { id: postId, edit: false} )
+};
 </script>
 
 <template>
@@ -103,6 +142,8 @@ onMounted(async () => {
             class="mtb10"
             @post-deleted="refreshPage"
             @edit-post="handleEditPost(post.id)"
+            @delete-post="handleDeletePost(post.id)"
+            @view-more="handleViewMore(post.id, post.username)"
           />
         </ul>
       </div>

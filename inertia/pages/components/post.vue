@@ -28,10 +28,11 @@ const props = defineProps<{
   activities: { id: number; name: string }[]
 }>();
 
-const getNamesFromIds = (ids: { id: number }[], dataArray: { id: number; name: string }[]) => {
+
+const getNameFromIds = (ids: [], dataArray: { id: number; name: string }[]) => {
   return ids
     .map((idObj) => {
-      const item = dataArray.find((data) => data.id === idObj.id);
+      const item = dataArray.find((data) => data.id === idObj);
       return item ? item.name : null;
     })
     .filter((name) => name !== null);
@@ -41,22 +42,6 @@ function formatDate(dateString) {
   return format(new Date(dateString), "dd MMM yyyy");
 }
 
-const deletePost = async (postId) => {
-  try {
-    // Sending DELETE request using axios.delete without the 'method' field
-    const response = await axios.delete(`/travelposts/${postId}`);
-
-    if (response.status === 204) {
-      // Successfully deleted
-      console.log("Post deleted successfully");
-      // You can remove the post from the UI or trigger a refresh
-      this.$emit("post-deleted", true); // Optional: Emit an event to notify the parent component
-    }
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    // Handle the error (display a message or show a toast notification)
-  }
-};
 
 // Load the theme from localStorage when the component is mounted
 onMounted(() => {
@@ -76,14 +61,14 @@ onMounted(() => {
     <p class="travel-post__paragraph"><b>About:</b> {{ post?.about }}</p>
     <p class="travel-post__paragraph">
       <b>Countries:</b>
-      {{ getNamesFromIds(post?.countries || [], countries).join(', ') || 'No countries' }}
+      {{ getNameFromIds(post?.countries || [], countries).join(', ') || 'No countries' }}
     </p>
     <p class="travel-post__paragraph">
-      <b>Cities:</b> {{ getNamesFromIds(post?.cities || [], cities).join(', ') || 'No cities' }}
+      <b>Cities:</b> {{ getNameFromIds(post?.cities || [], cities).join(', ') || 'No cities' }}
     </p>
     <p class="travel-post__paragraph">
       <b>Activities:</b>
-      {{ getNamesFromIds(post?.activities || [], activities).join(', ') || 'No activities' }}
+      {{ getNameFromIds(post?.activities || [], activities).join(', ') || 'No activities' }}
     </p>
 
     <!--<div class="travel-post__todo">
@@ -112,11 +97,11 @@ onMounted(() => {
         <button
           class="btn btn--travel-post"
           v-if="viewMode === 'edit'"
-          @click="deletePost(post?.id)"
+          @click="$emit('deletePost')"
         >
           Delete
         </button>
-        <button class="btn btn--travel-post" v-if="viewMode === 'view'" @click="$emit('viewMore')">
+        <button class="btn btn--travel-post" @click="$emit('viewMore')">
           View More
         </button>
       </div>
@@ -167,7 +152,6 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 180px;
 }
 
 .btn--travel-post {

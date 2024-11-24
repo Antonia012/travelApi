@@ -2,20 +2,20 @@
 import { usePage, router } from '@inertiajs/vue3'
 import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from 'vue'
 import { format } from 'date-fns'
-import axios from "axios";
+import axios from 'axios'
 
 const themeStyle = computed(() => store.getters.themeStyle)
 
 const { travelPost, edit } = usePage().props // Access the travel post data passed by Inertia
 
-console.log(edit)
-const getNamesFromIds = (ids: { id: number }[], dataArray: { id: number; name: string }[]) => {
+const getNameFromIds = (ids: [], dataArray: { id: number; name: string }[]) => {
   return ids
     .map((idObj) => {
-      const item = dataArray.find((data) => data.id === idObj.id)
-      return item ? item.name : null
+      const item = dataArray.find((data) => data.id === idObj)
+      console.log('item', item)
+      return item ? { id: item.id, name: item.name } : null;
     })
     .filter((name) => name !== null)
 }
@@ -25,40 +25,57 @@ function formatDate(dateString) {
 }
 
 const goBack = () => {
-  if (edit) {
+  if (edit === 'true') {
     router.get('/mytravels') // Navigate back to the previous page
   } else {
-    router.get('/discover')
+    history.back()
   } // Navigate back to the previous page
 }
 
-
-const userName = ref('')
-let getNewPostId = ref('')
-// const response = await axios.get('/user')
-// userName.value = response.data.username
+console.log('eeeeedit', edit)
 
 const title = ref(travelPost?.title) // New ref for title
 const about = ref(travelPost?.about) // New ref for about
+const userName = ref('') // New ref for username
+
+
 
 const countries = ref<any[]>([])
-const selectedCountries = ref<any[]>(travelPost?.countries)
+let selectedCountries = ref<any[]>(
+  getNameFromIds(travelPost?.countries || [], countries.value).map((name) => ({
+    id: null,
+    name,
+  }))
+)
 const countryInput = ref('')
 
+console.log('countries get', travelPost.countries)
+
 const cities = ref<any[]>([])
-const selectedCities = ref<any[]>(travelPost?.cities)
+let selectedCities = ref<any[]>(
+  getNameFromIds(travelPost?.cities || [], cities.value).map((name) => ({
+    id: null,
+    name,
+  }))
+)
 const cityInput = ref('')
 
 const activities = ref<any[]>([])
-const selectedActivities = ref<any[]>(travelPost?.activities)
+let selectedActivities = ref<any[]>(
+  getNameFromIds(travelPost?.activities || [], activities.value).map((name) => ({
+    id: null,
+    name,
+  }))
+)
 const activityInput = ref('')
 
-
 const newTask = ref('')
-const todos = ref(travelPost?.todoItems?.map((task, index) => ({
-  task,
-  completed: travelPost?.checkedItems[index] || false
-})) || [])
+const todos = ref(
+  travelPost?.todoItems?.map((task, index) => ({
+    task,
+    completed: travelPost?.checkedItems[index] || false,
+  })) || []
+)
 const addTodo = () => {
   if (newTask.value.trim()) {
     todos.value.push({ task: newTask.value, completed: false })
@@ -81,7 +98,17 @@ const deleteTodo = (index) => {
 const fetchCountries = async () => {
   try {
     const response = await axios.get('/countries')
-    countries.value = response.data
+    const data = response.data; // Adjust based on your API structure
+
+    if (Array.isArray(data)) {
+      countries.value = data.map((country) => ({
+        id: country.countryId,
+        name: country.name,
+      }));
+    } else {
+      console.error('Error: Expected an array but got:', data);
+      countries.value = [];
+    }
   } catch (error) {
     console.error('Error fetching countries:', error)
   }
@@ -91,7 +118,18 @@ const fetchCountries = async () => {
 const fetchCities = async () => {
   try {
     const response = await axios.get('/cities')
-    cities.value = response.data
+    const data = response.data; // Adjust based on your API structure
+
+    if (Array.isArray(data)) {
+      cities.value = data.map((city) => ({
+        id: city.cityId,
+        name: city.name,
+      }));
+    } else {
+      console.error('Error: Expected an array but got:', data);
+      cities.value = [];
+    }
+    console.log('citiessss', cities)
   } catch (error) {
     console.error('Error fetching cities:', error)
   }
@@ -101,18 +139,26 @@ const fetchCities = async () => {
 const fetchActivities = async () => {
   try {
     const response = await axios.get('/activities')
-    activities.value = response.data
+    const data = response.data; // Adjust based on your API structure
+
+    if (Array.isArray(data)) {
+      activities.value = data.map((activity) => ({
+        id: activity.activityId,
+        name: activity.name,
+      }));
+    } else {
+      console.error('Error: Expected an array but got:', data);
+      activities.value = [];
+    }
   } catch (error) {
     console.error('Error fetching activities:', error)
   }
 }
 
 onMounted(async () => {
-  fetchCountries()
-  fetchCities()
-  fetchActivities()
-
-  store.dispatch('loadThemeFromLocalStorage')
+  await fetchCountries()
+  await fetchCities()
+  await fetchActivities()
 
   try {
     const response = await axios.get('/user')
@@ -122,17 +168,14 @@ onMounted(async () => {
     console.error('Failed to fetch user details', error)
   }
 
-  try {
-    // Fetch the max ID from the backend
-    const response = await axios.get('/travelposts/count'); // Your backend route for max id
-    console.log('Max ID response:', response.data);
-    const maxId = response.data.maxId || 0; // If no posts exist, set maxId to 0
-    getNewPostId = maxId + 1; // New ID will be the largest ID + 1
-    console.log('New post ID:', getNewPostId);
-  } catch (error) {
-    console.error('Error fetching max ID:', error);
-  }
+  selectedCountries.value = getNameFromIds(travelPost?.countries || [], countries.value)
+  selectedCities.value = getNameFromIds(travelPost?.cities || [], cities.value)
+  selectedActivities.value = getNameFromIds(travelPost?.activities || [], activities.value)
+
+  store.dispatch('loadThemeFromLocalStorage')
 })
+
+console.log('selectedCities', selectedCities)
 
 // Filter countries based on user input
 const filteredCountries = computed(() => {
@@ -160,7 +203,7 @@ const addCountry = (country) => {
   // Check if the country is in the filtered list before adding
   if (
     country &&
-    !selectedCountries.value.some((c) => c.countryId === country.countryId) &&
+    !selectedCountries.value.some((c) => c.id === country.id) &&
     filteredCountries.value.includes(country)
   ) {
     selectedCountries.value.push(country)
@@ -171,7 +214,7 @@ const addCountry = (country) => {
 const addCity = (city) => {
   if (
     city &&
-    !selectedCities.value.some((c) => c.cityId === city.cityId) &&
+    !selectedCities.value.some((c) => c.id === city.id) &&
     filteredCities.value.includes(city)
   ) {
     selectedCities.value.push(city)
@@ -182,7 +225,7 @@ const addCity = (city) => {
 const addActivity = (activity) => {
   if (
     activity &&
-    !selectedActivities.value.some((a) => a.activityId === activity.activityId) &&
+    !selectedActivities.value.some((a) => a.id === activity.id) &&
     filteredActivities.value.includes(activity)
   ) {
     selectedActivities.value.push(activity)
@@ -207,15 +250,13 @@ const removeActivity = (index: number) => {
 
 defineProps(['countries'])
 
-
-
 const submitForm = async () => {
   console.log('Submit Form Called')
 
   // Extract IDs for countries, cities, and activities
-  const countryIds = selectedCountries.value.map((country) => country.countryId)
-  const cityIds = selectedCities.value.map((city) => city.cityId)
-  const activityIds = selectedActivities.value.map((activity) => activity.activityId)
+  const countryIds = selectedCountries.value.map((country) => country.id)
+  const cityIds = selectedCities.value.map((city) => city.id)
+  const activityIds = selectedActivities.value.map((activity) => activity.id)
 
   // Create arrays for todo items and their completion status
   const todoItems = todos.value.map((todo) => todo.task) // Extract task text
@@ -223,9 +264,10 @@ const submitForm = async () => {
 
   try {
     // Make the POST request with the new ID and todo information
-    const response = await axios.post('/travelposts', {
-      id: getNewPostId,
+    const response = await axios.post(`/travelposts/${travelPost.id}`, {
+      id: travelPost.id,
       username: userName.value,
+      userOfPost: travelPost.username,
       title: title.value,
       countries: countryIds,
       cities: cityIds,
@@ -233,7 +275,6 @@ const submitForm = async () => {
       about: about.value,
       todoItems: todoItems, // Array of to-do item texts
       checkedItems: checkedItems, // Array of completion statuses
-      created:  new Date().toISOString(),
     })
 
     console.log('Travel post created:', response.data)
@@ -249,7 +290,7 @@ const submitForm = async () => {
   <div v-if="travelPost" :style="themeStyle">
     <div class="app__container">
       <div class="container">
-        <div class="travel-post" v-if="!edit">
+        <div class="travel-post" v-if="edit === 'false'">
           <div class="travel-post__header">
             <div class="travel-post__title">{{ travelPost?.title }}</div>
             <div class="travel-post__header-right">
@@ -262,20 +303,16 @@ const submitForm = async () => {
           <p class="travel-post__paragraph"><b>About:</b> {{ travelPost?.about }}</p>
           <p class="travel-post__paragraph">
             <b>Countries:</b>
-            {{
-              getNamesFromIds(travelPost?.countries || [], countries).join(', ') || 'No countries'
-            }}
+            {{ (getNameFromIds(travelPost?.countries || [], countries).map(item => item.name) || []).join(', ') || 'No countries' }}
           </p>
           <p class="travel-post__paragraph">
             <b>Cities:</b>
-            {{ getNamesFromIds(travelPost?.cities || [], cities).join(', ') || 'No cities' }}
+            {{ (getNameFromIds(travelPost?.cities || [], cities).map(item => item.name) || []).join(', ') || 'No cities' }}
           </p>
           <p class="travel-post__paragraph">
             <b>Activities:</b>
-            {{
-              getNamesFromIds(travelPost?.activities || [], activities).join(', ') ||
-              'No activities'
-            }}
+            {{ (getNameFromIds(travelPost?.activities || [], activities).map(item => item.name) || []).join(', ') || 'No activities' }}
+
           </p>
 
           <div class="travel-post__todo">
@@ -298,6 +335,7 @@ const submitForm = async () => {
 
           <button class="btn btn--viewpost" @click="goBack">Go back</button>
         </div>
+
         <div v-else>
           <form class="add-travel" @submit.prevent="submitForm">
             <div class="container__title">Plan new travel</div>
@@ -307,7 +345,13 @@ const submitForm = async () => {
                 <label for="title"><b>Title</b></label>
               </div>
               <div class="add-travel__input">
-                <input type="text" v-model="title" placeholder="Enter Title" name="title" required />
+                <input
+                  type="text"
+                  v-model="title"
+                  placeholder="Enter Title"
+                  name="title"
+                  required
+                />
               </div>
             </div>
 
@@ -331,7 +375,10 @@ const submitForm = async () => {
                   placeholder="Enter Country"
                   @keydown.enter.prevent="addCountry({ id: null, name: countryInput })"
                 />
-                <div class="add-travel__suggestion" v-if="countryInput && filteredCountries.length > 0">
+                <div
+                  class="add-travel__suggestion"
+                  v-if="countryInput && filteredCountries.length > 0"
+                >
                   <ul>
                     <li
                       v-for="country in filteredCountries"
@@ -344,14 +391,14 @@ const submitForm = async () => {
                   </ul>
                 </div>
                 <div class="selected-countries">
-              <span
-                v-for="(country, index) in selectedCountries"
-                :key="country.id"
-                class="add-travel__item"
-              >
-                {{ country.name }}
-                <button class="add-travel__item-button" @click="removeCountry(index)">x</button>
-              </span>
+                  <span
+                    v-for="(country, index) in selectedCountries"
+                    :key="country.id"
+                    class="add-travel__item"
+                  >
+                    {{ country.name }}
+                    <button class="add-travel__item-button" @click="removeCountry(index)">x</button>
+                  </span>
                 </div>
               </div>
             </div>
@@ -380,10 +427,14 @@ const submitForm = async () => {
                   </ul>
                 </div>
                 <div class="selected-cities">
-              <span v-for="(city, index) in selectedCities" :key="city.id" class="add-travel__item">
-                {{ city.name }}
-                <button class="add-travel__item-button" @click="removeCity(index)">x</button>
-              </span>
+                  <span
+                    v-for="(city, index) in selectedCities"
+                    :key="city.id"
+                    class="add-travel__item"
+                  >
+                    {{ city.name }}
+                    <button class="add-travel__item-button" @click="removeCity(index)">x</button>
+                  </span>
                 </div>
               </div>
             </div>
@@ -415,14 +466,16 @@ const submitForm = async () => {
                   </ul>
                 </div>
                 <div class="selected-activities">
-              <span
-                v-for="(activity, index) in selectedActivities"
-                :key="activity.id"
-                class="add-travel__item"
-              >
-                {{ activity.name }}
-                <button class="add-travel__item-button" @click="removeActivity(index)">x</button>
-              </span>
+                  <span
+                    v-for="(activity, index) in selectedActivities"
+                    :key="activity.id"
+                    class="add-travel__item"
+                  >
+                    {{ activity.name }}
+                    <button class="add-travel__item-button" @click="removeActivity(index)">
+                      x
+                    </button>
+                  </span>
                 </div>
               </div>
             </div>
@@ -441,10 +494,16 @@ const submitForm = async () => {
                   <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
                     <button class="btn--add-todo" @click.prevent="insertTodo(index)">+</button>
                     <div class="todo-item">
-                      <input class="add-travel__checkbox" type="checkbox" v-model="todo.completed" />
+                      <input
+                        class="add-travel__checkbox"
+                        type="checkbox"
+                        v-model="todo.completed"
+                      />
                       <span>{{ todo.task }}</span>
                     </div>
-                    <button class="btn btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
+                    <button class="btn btn--delete" @click.prevent="deleteTodo(index)">
+                      Delete
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -452,7 +511,7 @@ const submitForm = async () => {
 
             <div class="add-travel__ftr">
               <div>
-                <button type="button" class="btn btn--delete">Cancel</button>
+                <button type="button" class="btn btn--delete" @click="goBack">Cancel</button>
               </div>
               <div>
                 <button type="submit" class="btn btn--submit">Add travel</button>

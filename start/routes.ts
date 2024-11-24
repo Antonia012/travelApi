@@ -63,6 +63,7 @@ router.group(() => {
 
 router.post('/logout', [AuthController, 'logout']).as('logout')
 
+
 router
   .get('/mytravels', async ({ inertia }) => {
     return inertia.render('mytravels')
@@ -74,21 +75,7 @@ router
   )
   .as('mytravels')
 
-router.get('/countries', [CountriesController, 'index']).use(
-  middleware.auth({
-    guards: ['web'],
-  })
-)
-router.get('/cities', [CitiesController, 'index']).use(
-  middleware.auth({
-    guards: ['web'],
-  })
-)
-router.get('/activities', [ActivitiesController, 'index']).use(
-  middleware.auth({
-    guards: ['web'],
-  })
-)
+
 
 router.get('/travelposts', [TravelPostsController, 'index'])
 router.post('/travelposts', [TravelPostsController, 'store']).use(
@@ -112,7 +99,7 @@ router
 
 router.get('/travelposts/:id', [TravelPostsController, 'show']).as('post.show')
 
-router.put('/travelposts/:id', [TravelPostsController, 'updatePost']).use(
+router.post('/travelposts/:id', [TravelPostsController, 'updatePost']).use(
   middleware.auth({
     guards: ['web'],
   })
@@ -126,6 +113,22 @@ router.delete('/travelposts/:id', [TravelPostsController, 'destroyPost']).use(
 router.get('/travelposts/user/:username', [TravelPostsController, 'userPosts'])
 
 router.get('/user', [AuthController, 'getUser']).use(
+  middleware.auth({
+    guards: ['web'],
+  })
+)
+
+router.get('/countries', [CountriesController, 'index']).use(
+  middleware.auth({
+    guards: ['web'],
+  })
+)
+router.get('/cities', [CitiesController, 'index']).use(
+  middleware.auth({
+    guards: ['web'],
+  })
+)
+router.get('/activities', [ActivitiesController, 'index']).use(
   middleware.auth({
     guards: ['web'],
   })
