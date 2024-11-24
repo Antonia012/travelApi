@@ -11,7 +11,6 @@ const cities = ref([])
 const countries = ref([])
 const activities = ref([])
 
-// Access the Vuex store for theme styles
 const themeStyle = computed(() => store.getters.themeStyle)
 
 const fetchTravelPosts = async () => {
@@ -23,7 +22,6 @@ const fetchTravelPosts = async () => {
   }
 }
 
-// Fetch countries from the API
 const fetchCountries = async () => {
   try {
     const response = await axios.get('/countries')
@@ -36,7 +34,6 @@ const fetchCountries = async () => {
   }
 }
 
-// Fetch cities from the API
 const fetchCities = async () => {
   try {
     const response = await axios.get('/cities')
@@ -44,13 +41,11 @@ const fetchCities = async () => {
       id: city.cityId,
       name: city.name,
     }))
-    console.log('citiessss', response)
   } catch (error) {
     console.error('Error fetching cities:', error)
   }
 }
 
-// Fetch activities from the API
 const fetchActivities = async () => {
   try {
     const response = await axios.get('/activities')
@@ -64,13 +59,10 @@ const fetchActivities = async () => {
 }
 
 const handleViewMore = async (postId) => {
-  // Navigate to a new page with the post data passed as route state
-  console.log('Viewing post:', postId)
   router.get(`/travelposts/${postId}`, { id: postId, edit: false} )
 };
 
 
-// Fetch travel posts when the component is mounted
 onMounted(() => {
   store.dispatch('loadThemeFromLocalStorage')
   fetchTravelPosts()
@@ -85,7 +77,12 @@ onMounted(() => {
   <Nav />
   <div class="app__container" :style="themeStyle">
     <div class="container" >
-      <div class="container__title">Discover</div>
+      <div class="discover__background">
+        <div class="container__title">Discover</div>
+        <div v-if="travelPosts.length === 0">
+          No travel posts found. Be the first traveler and experience new adventures ! &nbsp; :)
+        </div>
+      </div>
 
       <ul class="mtb3">
         <TravelPost
@@ -105,4 +102,15 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.discover__background {
+  background: v-bind(themeStyle.backgroundColor);
+  border-radius: 32px;
+  padding: 20px;
+
+  box-shadow: 0 0 10px v-bind(themeStyle.secondary);
+
+  text-align: center;
+  width: 100%;
+}
+</style>

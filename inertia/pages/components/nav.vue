@@ -1,60 +1,66 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import logo from "/resources/img/logo.png"
-//import { useStore } from 'vuex'; // Import the Vuex store instance
-
-// Access the Vuex store
-//const store = useStore();
-
 import store from '~/css/themeStore'
 import axios from 'axios'
 import { router } from "@inertiajs/vue3";
 
-// const isLoading = ref(true)
 const userName = ref('')
-
-// Computed properties to access state reactively from Vuex
 const themeStyle = computed(() => store.getters.themeStyle)
-const isMenuOpen = computed(() => store.getters.isMenuOpen) // Access via getter
-const isLoggedIn = computed(() => store.state.isLoggedIn) // You can also access it directly as it's reactive
+const isLoggedIn = computed(() => store.state.isLoggedIn)
+const dropdownVisible = ref(false)
+const isMobile = computed(() => windowWidth.value < 600);
+const windowWidth = ref(0);
+const isPopupVisible = ref(false)
+let errorMessage = ref('Wanna try dark mode? Buy premium')
 
-// Function to toggle the theme using Vuex mutation
+
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
 function toggleTheme() {
-  store.commit('toggleTheme')
-  localStorage.setItem('theme', store.state.theme) // Save theme in localStorage
+  // store.commit('toggleTheme')
+  // localStorage.setItem('theme', store.state.theme)
+
+  isPopupVisible.value = true
 }
 
-// Function to toggle the menu using Vuex mutation
-function toggleMenu() {
-  store.commit('toggleMenu')
+function closePopUp() {
+  isPopupVisible.value = false
 }
 
-// Load the theme from localStorage when the component is mounted
+function toggleDropdown() {
+  dropdownVisible.value = !dropdownVisible.value
+}
+
 onMounted(async () => {
   await store.dispatch('loadThemeFromLocalStorage')
-  // isLoading.value = false
+
+  window.addEventListener('resize', updateWindowWidth);
+
+  updateWindowWidth()
 
   try {
     const response = await axios.get('/user')
     userName.value = response.data.username
-    console.log('sdfsdf', userName)
   } catch (error) {
     console.error('Failed to fetch user details', error)
   }
 })
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateWindowWidth);
+});
+
 const logout = async () => {
   try {
     const response = await axios.post('/logout')
 
-    console.log('Logout successful', response.data)
-
     store.commit('setLoginStatus', false)
-
     localStorage.setItem('isLoggedIn', 'false')
 
     await router.get('/discover')
-    // Optionally, redirect to another page or store user session
   } catch (error: any) {
     console.error('Logout failed', error)
   }
@@ -63,28 +69,29 @@ const logout = async () => {
 
 <template>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <div :class="['topnav']" :style="themeStyle">
+    <div class="topnav__mobile">
+      <div @click="toggleTheme" :style="themeStyle" style="align-content: center" >
+        <img src="/resources/img/mode.png" alt="" class="mode">
+      </div>
+      <div class="nav-center" v-if="isMobile">
+        <div class="logo" @click="toggleDropdown()">
+          <img :src="logo" alt="Logo" class="logo-img" />
+        </div>
+      </div>
+    </div>
 
-  <!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
-
-  <!-- Apply theme dynamically to the entire navigation bar -->
-  <div :class="['topnav', { responsive: isMenuOpen }]" :style="themeStyle">
-    <!-- Toggle theme button -->
-    <a @click="toggleTheme" class="active" :style="themeStyle">Toggle Theme</a>
-
-    <!-- Left section: Navigation links like Discover, About, My Travels (if logged in) -->
     <div class="nav-left">
       <a href="/discover" :style="themeStyle">Discover</a>
       <a href="/about" :style="themeStyle">About</a>
     </div>
 
-    <!-- Center section: Logo (redirects to home page) -->
-    <div class="nav-center">
-      <a href="/" class="logo">
+    <div class="nav-center" v-if="!isMobile">
+      <div class="logo" @click="toggleDropdown()">
         <img :src="logo" alt="Logo" class="logo-img" />
-      </a>
+      </div>
     </div>
 
-    <!-- Right section: Authentication links and user info -->
     <div class="nav-right">
       <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
       <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
@@ -93,23 +100,55 @@ const logout = async () => {
       <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</span>
     </div>
 
-    <!-- Mobile Menu Icon -->
-    <a href="javascript:void(0);" class="icon" @click="toggleMenu" :style="themeStyle">
-      <i class="fa fa-bars"></i>
-    </a>
+    <div v-if="dropdownVisible" class="dropdown-content">
+      <div class="nav-left-dropdown">
+        <a href="/discover" :style="themeStyle">Discover</a>
+        <a href="/about" :style="themeStyle">About</a>
+      </div>
+      <div class="nav-right-dropdown">
+        <a v-if="!isLoggedIn" href="/login" :style="themeStyle">Log In</a>
+        <a v-if="!isLoggedIn" href="/signup" :style="themeStyle">Sign Up</a>
+        <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
+        <a v-if="isLoggedIn" @click.prevent="logout" :style="themeStyle">Log Out</a>
+      </div>
+    </div>
+
+    <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
+      <div class="popup-content">
+        <p class="error-message">{{ errorMessage }}</p>
+        <button @click="isPopupVisible = false">Close</button>
+      </div>
+    </div>
   </div>
+
 </template>
 
 <style scoped>
-
-/* General Styles for the Navigation Bar */
 .topnav {
+  padding: 10px 30px;
   overflow: hidden;
   background-color: #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  width: auto;
+  flex-direction: row;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+.mode {
+  height:50px;
+  min-width: 50px;
+  width: auto;
+}
+
+.topnav__mobile{
+  display: flex;
+  flex-direction: row;
+  gap:30px;
 }
 
 .nav-left,
@@ -133,17 +172,13 @@ const logout = async () => {
 
 .nav-center .logo {
   display: block;
+  cursor: pointer;
 }
 
 .nav-center .logo-img {
-  max-width: 90px; /* Adjust size of the logo */
+  max-width: 90px;
 }
 
-.topnav .active {
-  color: white;
-}
-
-/* Split layout for the left, center, and right sections */
 .nav-left {
   justify-content: flex-end;
   flex-grow: 1;
@@ -154,54 +189,110 @@ const logout = async () => {
   flex-grow: 1;
 }
 
-.auth-container {
-  display: flex;
-  gap: 10px;
-}
-
 .auth-split {
   text-decoration: none;
   padding: 10px;
   border-radius: 5px;
 }
 
-.topnav .icon {
+.dropdown-content {
   display: none;
-  cursor: pointer;
+  width: 100%;
+  background-color: #333;
+  z-index: 1;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.nav-left-dropdown,
+.nav-right-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-left-dropdown a,
+.nav-right-dropdown a {
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+}
+
+.nav-left-dropdown a:hover,
+.nav-right-dropdown a:hover {
+  background-color: #555;
 }
 
 @media screen and (max-width: 600px) {
-  .topnav a:not(:first-child) {
+  .topnav .nav-left,
+  .topnav .nav-right {
     display: none;
   }
 
-  .topnav a.icon {
-    float: right;
-    display: block;
+  .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #333;
+  }
+
+  .nav-left-dropdown a,
+  .nav-right-dropdown a {
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  .nav-left-dropdown a:hover,
+  .nav-right-dropdown a:hover {
+    background-color: #555;
   }
 }
 
-@media screen and (max-width: 600px) {
-  .topnav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
-  .topnav.responsive a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-}
-
-/* Styling for the authentication links */
-.auth-container {
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  gap: 10px; /* Adjust the gap as needed */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
-[v-cloak] {
-  display: none;
+.popup-content {
+  background-color: v-bind(themeStyle.backgroundColor);
+  padding: 20px;
+  border-radius: 32px;
+  text-align: center;
+  width: 300px;
+  max-width: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.popup-content button {
+  box-sizing: border-box;
+
+  padding: 6px 13px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 16px;
+
+  color: v-bind(themeStyle.color);
+  box-shadow: 0 3px 5px v-bind(themeStyle.secondary);
+  background: v-bind(themeStyle.backgroundColor);
+}
+
+.popup-content button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 5px v-bind(themeStyle.primary);
+  background: v-bind(themeStyle.backgroundColor);
 }
 </style>

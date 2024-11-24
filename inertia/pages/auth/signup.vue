@@ -5,35 +5,39 @@ import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
 
-// Access the Vuex store for theme styles
 const themeStyle = computed(() => store.getters.themeStyle)
 
-// Load theme from localStorage on component mount
 onMounted(() => {
   store.dispatch('loadThemeFromLocalStorage')
 })
 
-// Form data refs
 const username = ref('')
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const userId = ref('')
 
-// Registration function
-const register = async () => {
-  errorMessage.value = '' // Clear any previous error messages
+onMounted( async () =>{
   try {
-    const response = await axios.post('/signup', {
+    const response = await axios.get('/user/count');
+    const maxId = response.data.maxId || 0;
+    userId.value = maxId + 1;
+  } catch (error) {
+    console.error('Error fetching max ID:', error);
+  }
+})
+
+const register = async () => {
+  errorMessage.value = ''
+  try {
+    await axios.post('/signup', {
+      id: userId.value,
       username: username.value,
       email: email.value,
       password: password.value,
     })
 
-    console.log(password.value)
-
-    console.log('Registration successful', response.data)
     await router.get('/login')
-    // Optionally, redirect to login or another page
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || 'Registration failed'
     console.error('Registration failed', error)
@@ -90,17 +94,6 @@ const register = async () => {
         </div>
 
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-
-        <div class="signup-ftr-container pos-right">
-          <!--          <button-->
-          <!--            type="button"-->
-          <!--            class="btn btn&#45;&#45;cancel"-->
-          <!--            :style="{ backgroundColor: themeStyle.secondary }"-->
-          <!--          >-->
-          <!--            Cancel-->
-          <!--          </button>-->
-          <span class="psw">Forgot <a href="#">password?</a></span>
-        </div>
       </form>
     </div>
   </div>
@@ -108,8 +101,9 @@ const register = async () => {
 
 <style scoped>
 .signup__section {
+  background: v-bind(themeStyle.backgroundColor);
+
   justify-self: center;
-  border: 1px solid v-bind(themeStyle.color);
   box-shadow: 0 2px 16px v-bind(themeStyle.color);
   border-radius: 32px;
 
@@ -130,10 +124,6 @@ input {
   background: v-bind(themeStyle.backgroundColor);
 }
 
-.signup-ftr-container {
-  margin-top: 16px;
-}
-
 .error-message {
   color: red;
   font-size: 14px;
@@ -141,8 +131,13 @@ input {
 }
 
 .btn--submit {
-  border-color: v-bind(themeStyle.secondary);
   color: v-bind(themeStyle.color);
+  box-shadow: 0 3px 5px v-bind(themeStyle.secondary);
+}
+
+.btn--submit:hover {
+  box-shadow: 0 3px 5px v-bind(themeStyle.primary);
+
 }
 
 .signup__item {

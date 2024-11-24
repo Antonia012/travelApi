@@ -4,8 +4,8 @@ import City from '#models/city'
 export default class CitiesController {
   async index({ response }: HttpContextContract) {
     try {
-      const cities = await City.all() // Fetch all countries from the database
-      return response.json(cities) // Return the countries as a JSON response
+      const cities = await City.all()
+      return response.json(cities)
     } catch (error) {
       return response.status(500).send('Internal Server Error')
     }

@@ -4,54 +4,91 @@ import { Head } from '@inertiajs/vue3'
 import Nav from '~/pages/components/nav.vue'
 import store from '~/css/themeStore'
 
-// Access the Vuex store for theme styles
 const themeStyle = computed(() => store.getters.themeStyle)
 
-// Load the theme from localStorage when the component is mounted
 onMounted(() => {
   store.dispatch('loadThemeFromLocalStorage')
 })
 </script>
 
 <template>
-  <!-- Apply theme to the entire body or root div -->
   <Head title="Travel Map" />
   <Nav />
 
   <div class="app__container" :style="themeStyle">
     <div class="container">
       <div class="about__section">
-        <h1>About This Project</h1>
-        <p>
-          This is a student project designed for travel enthusiasts to share their experiences and
-          inspire others. The main goal is to create a platform where people can post their travel
-          adventures and plan future trips.
-        </p>
+        <div class="about__background">
+          <div class="container__title">About This Project</div>
+          <p>
+            This is a student project designed for travel enthusiasts to share their experiences and
+            inspire others. The main goal is to create a platform where people can post their travel
+            adventures and plan future trips.
+          </p>
 
-        <h2>Features</h2>
-        <ul>
-          <li>
-            <strong>Travel Posts:</strong> Each travel post acts like a to-do list, consisting of:
-            <ul>
-              <li><strong>Header:</strong> The visited place</li>
-              <li><strong>Description:</strong> A paragraph explaining the travel experience</li>
-            </ul>
-          </li>
-          <li>
-            <strong>Mark Your Travels:</strong> Users can mark places they've visited, allowing them
-            to keep track of their adventures.
-          </li>
-          <li>
-            <strong>Planning Tool:</strong> The site will generate suggestions for places you
-            haven't visited, based on other users' travels that are near your intended destination.
-          </li>
-        </ul>
+          <br />
+          <br />
 
-        <h2>Join Our Community!</h2>
-        <p>
-          Share your stories, get inspired by fellow travelers, and make your travel plans more
-          exciting and organized. Together, we can explore the world one post at a time!
-        </p>
+          <div class="container__subtitle pos-center">Features</div>
+          <div class="pos-center">
+            Each travel post serves as a detailed record of your journey, including:
+          </div>
+        </div>
+
+        <br />
+
+        <div class="about__row">
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>Name of Travel</h3>
+              <p>The place you visited, marking the destination of your adventure.</p>
+            </div>
+          </div>
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>About Your Travel</h3>
+              <p>A paragraph describing your travel experience and memories.</p>
+            </div>
+          </div>
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>Countries</h3>
+              <p>A list of the countries you've visited during your trip.</p>
+            </div>
+          </div>
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>Cities</h3>
+              <p>A list of cities you explored during your travels.</p>
+            </div>
+          </div>
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>Activities</h3>
+              <p>A list of activities you planned or experienced during your trip.</p>
+            </div>
+          </div>
+          <div class="about__column">
+            <div class="about__travel-box">
+              <h3>Planned Places</h3>
+              <p>
+                A feature where you can list places you plan to visit, and once visited, mark them
+                as completed, allowing you to keep track of both future travels and past adventures
+                in one place.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <br />
+
+        <div class="about__background">
+          <div class="container__subtitle">Join Our Community!</div>
+          <p class="mb2">
+            Share your stories, get inspired by fellow travelers, and make your travel plans more
+            exciting and organized. Together, we can explore the world one post at a time!
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -59,19 +96,18 @@ onMounted(() => {
 
 <style scoped>
 .about__section {
-  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
   line-height: 1.6;
 }
 
-h1 {
-  margin-bottom: 20px;
-}
+.about__background {
+  background: v-bind(themeStyle.backgroundColor);
+  border-radius: 32px;
+  padding: 30px;
 
-h2 {
-  margin-top: 20px;
+  box-shadow: 0 0 10px v-bind(themeStyle.secondary);
 }
 
 ul {
@@ -81,5 +117,57 @@ ul {
 
 li {
   margin-bottom: 10px;
+}
+
+.about__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.about__column {
+  flex: 1 1 25%;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.about__travel-box {
+  background-color: v-bind(themeStyle.backgroundColor);
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px v-bind(themeStyle.secondary);
+  transition: 0.3s;
+  border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  min-width: 200px;
+}
+
+.about__travel-box h3,
+.about__travel-box p {
+  margin: 0;
+  padding: 0;
+}
+
+.about__travel-box h3 {
+  font-size: 18px;
+  color: v-bind(themeStyle.color);
+  margin-bottom: 10px;
+}
+
+.about__travel-box p {
+  font-size: 14px;
+  color: v-bind(themeStyle.color);
+  flex-grow: 1;
+}
+
+.about__travel-box:hover {
+  box-shadow: 0 8px 16px v-bind(themeStyle.primary);
+  transform: scale(1.05);
 }
 </style>

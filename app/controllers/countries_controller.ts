@@ -4,8 +4,8 @@ import Country from '#models/country'
 export default class CountriesController {
   async index({ response }: HttpContextContract) {
     try {
-      const countries = await Country.all() // Fetch all countries from the database
-      return response.json(countries) // Return the countries as a JSON response
+      const countries = await Country.all()
+      return response.json(countries)
     } catch (error) {
       return response.status(500).send('Internal Server Error')
     }

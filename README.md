@@ -1,9 +1,19 @@
 # travelApp
 
+
 cloning project
 # wega.docs
 
-node ace generate:key
+install:
+nodejs 20.18.0 LTS prebuild installer
+Postgresql 17.0.1
+Nvm - https://sourceforge.net/projects/nvm-for-windows.mirror/
+
+in postgresql create user + password, create empty database travels
+
+create .env from .env.example
+
+get api key - node ace generate:key 
 
 npm install
 node ace migration:run

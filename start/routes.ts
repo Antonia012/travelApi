@@ -63,7 +63,6 @@ router.group(() => {
 
 router.post('/logout', [AuthController, 'logout']).as('logout')
 
-
 router
   .get('/mytravels', async ({ inertia }) => {
     return inertia.render('mytravels')
@@ -74,8 +73,6 @@ router
     })
   )
   .as('mytravels')
-
-
 
 router.get('/travelposts', [TravelPostsController, 'index'])
 router.post('/travelposts', [TravelPostsController, 'store']).use(
@@ -117,6 +114,8 @@ router.get('/user', [AuthController, 'getUser']).use(
     guards: ['web'],
   })
 )
+
+router.get('/user/count', [AuthController, 'countUsers'])
 
 router.get('/countries', [CountriesController, 'index']).use(
   middleware.auth({

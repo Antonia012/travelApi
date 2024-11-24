@@ -8,37 +8,28 @@ import axios from 'axios'
 
 const themeStyle = computed(() => store.getters.themeStyle)
 
-const { travelPost, edit } = usePage().props // Access the travel post data passed by Inertia
+const { travelPost, edit } = usePage().props
+const title = ref(travelPost?.title)
+const about = ref(travelPost?.about)
+const userName = ref('')
 
 const getNameFromIds = (ids: [], dataArray: { id: number; name: string }[]) => {
   return ids
     .map((idObj) => {
       const item = dataArray.find((data) => data.id === idObj)
       console.log('item', item)
-      return item ? { id: item.id, name: item.name } : null;
+      return item ? { id: item.id, name: item.name } : null
     })
     .filter((name) => name !== null)
 }
 
-function formatDate(dateString) {
-  return format(new Date(dateString), 'dd MMM yyyy')
-}
-
 const goBack = () => {
   if (edit === 'true') {
-    router.get('/mytravels') // Navigate back to the previous page
+    router.get('/mytravels')
   } else {
     history.back()
-  } // Navigate back to the previous page
+  }
 }
-
-console.log('eeeeedit', edit)
-
-const title = ref(travelPost?.title) // New ref for title
-const about = ref(travelPost?.about) // New ref for about
-const userName = ref('') // New ref for username
-
-
 
 const countries = ref<any[]>([])
 let selectedCountries = ref<any[]>(
@@ -48,8 +39,6 @@ let selectedCountries = ref<any[]>(
   }))
 )
 const countryInput = ref('')
-
-console.log('countries get', travelPost.countries)
 
 const cities = ref<any[]>([])
 let selectedCities = ref<any[]>(
@@ -94,61 +83,61 @@ const deleteTodo = (index) => {
   todos.value.splice(index, 1)
 }
 
-// Fetch countries from the API
+function formatDate(dateString) {
+  return format(new Date(dateString), 'dd MMM yyyy')
+}
+
 const fetchCountries = async () => {
   try {
     const response = await axios.get('/countries')
-    const data = response.data; // Adjust based on your API structure
+    const data = response.data
 
     if (Array.isArray(data)) {
       countries.value = data.map((country) => ({
         id: country.countryId,
         name: country.name,
-      }));
+      }))
     } else {
-      console.error('Error: Expected an array but got:', data);
-      countries.value = [];
+      console.error('Error: Expected an array but got:', data)
+      countries.value = []
     }
   } catch (error) {
     console.error('Error fetching countries:', error)
   }
 }
 
-// Fetch cities from the API
 const fetchCities = async () => {
   try {
     const response = await axios.get('/cities')
-    const data = response.data; // Adjust based on your API structure
+    const data = response.data
 
     if (Array.isArray(data)) {
       cities.value = data.map((city) => ({
         id: city.cityId,
         name: city.name,
-      }));
+      }))
     } else {
-      console.error('Error: Expected an array but got:', data);
-      cities.value = [];
+      console.error('Error: Expected an array but got:', data)
+      cities.value = []
     }
-    console.log('citiessss', cities)
   } catch (error) {
     console.error('Error fetching cities:', error)
   }
 }
 
-// Fetch activities from the API
 const fetchActivities = async () => {
   try {
     const response = await axios.get('/activities')
-    const data = response.data; // Adjust based on your API structure
+    const data = response.data
 
     if (Array.isArray(data)) {
       activities.value = data.map((activity) => ({
         id: activity.activityId,
         name: activity.name,
-      }));
+      }))
     } else {
-      console.error('Error: Expected an array but got:', data);
-      activities.value = [];
+      console.error('Error: Expected an array but got:', data)
+      activities.value = []
     }
   } catch (error) {
     console.error('Error fetching activities:', error)
@@ -163,7 +152,6 @@ onMounted(async () => {
   try {
     const response = await axios.get('/user')
     userName.value = response.data.username
-    console.log('sdfsdf', userName)
   } catch (error) {
     console.error('Failed to fetch user details', error)
   }
@@ -172,42 +160,37 @@ onMounted(async () => {
   selectedCities.value = getNameFromIds(travelPost?.cities || [], cities.value)
   selectedActivities.value = getNameFromIds(travelPost?.activities || [], activities.value)
 
-  store.dispatch('loadThemeFromLocalStorage')
+  await store.dispatch('loadThemeFromLocalStorage')
 })
 
 console.log('selectedCities', selectedCities)
 
-// Filter countries based on user input
 const filteredCountries = computed(() => {
   return countries.value.filter((country) =>
     country.name.toLowerCase().includes(countryInput.value.toLowerCase())
   )
 })
 
-// Filter cities based on user input
 const filteredCities = computed(() => {
   return cities.value.filter((city) =>
     city.name.toLowerCase().includes(cityInput.value.toLowerCase())
   )
 })
 
-// Filter activities based on user input
 const filteredActivities = computed(() => {
   return activities.value.filter((activity) =>
     activity.name.toLowerCase().includes(activityInput.value.toLowerCase())
   )
 })
 
-// Add selected country
 const addCountry = (country) => {
-  // Check if the country is in the filtered list before adding
   if (
     country &&
     !selectedCountries.value.some((c) => c.id === country.id) &&
     filteredCountries.value.includes(country)
   ) {
     selectedCountries.value.push(country)
-    countryInput.value = '' // Clear the input field after adding
+    countryInput.value = ''
   }
 }
 
@@ -218,7 +201,7 @@ const addCity = (city) => {
     filteredCities.value.includes(city)
   ) {
     selectedCities.value.push(city)
-    cityInput.value = '' // Clear the input field after adding
+    cityInput.value = ''
   }
 }
 
@@ -229,21 +212,18 @@ const addActivity = (activity) => {
     filteredActivities.value.includes(activity)
   ) {
     selectedActivities.value.push(activity)
-    activityInput.value = '' // Clear the input field after adding
+    activityInput.value = ''
   }
 }
 
-// Remove selected country
 const removeCountry = (index: number) => {
   selectedCountries.value.splice(index, 1)
 }
 
-// Remove selected city
 const removeCity = (index: number) => {
   selectedCities.value.splice(index, 1)
 }
 
-// Remove selected activity
 const removeActivity = (index: number) => {
   selectedActivities.value.splice(index, 1)
 }
@@ -253,17 +233,14 @@ defineProps(['countries'])
 const submitForm = async () => {
   console.log('Submit Form Called')
 
-  // Extract IDs for countries, cities, and activities
   const countryIds = selectedCountries.value.map((country) => country.id)
   const cityIds = selectedCities.value.map((city) => city.id)
   const activityIds = selectedActivities.value.map((activity) => activity.id)
 
-  // Create arrays for todo items and their completion status
-  const todoItems = todos.value.map((todo) => todo.task) // Extract task text
-  const checkedItems = todos.value.map((todo) => todo.completed) // Extract completion status
+  const todoItems = todos.value.map((todo) => todo.task)
+  const checkedItems = todos.value.map((todo) => todo.completed)
 
   try {
-    // Make the POST request with the new ID and todo information
     const response = await axios.post(`/travelposts/${travelPost.id}`, {
       id: travelPost.id,
       username: userName.value,
@@ -273,8 +250,8 @@ const submitForm = async () => {
       cities: cityIds,
       activities: activityIds,
       about: about.value,
-      todoItems: todoItems, // Array of to-do item texts
-      checkedItems: checkedItems, // Array of completion statuses
+      todoItems: todoItems,
+      checkedItems: checkedItems,
     })
 
     console.log('Travel post created:', response.data)
@@ -303,20 +280,33 @@ const submitForm = async () => {
           <p class="travel-post__paragraph"><b>About:</b> {{ travelPost?.about }}</p>
           <p class="travel-post__paragraph">
             <b>Countries:</b>
-            {{ (getNameFromIds(travelPost?.countries || [], countries).map(item => item.name) || []).join(', ') || 'No countries' }}
+            {{
+              (
+                getNameFromIds(travelPost?.countries || [], countries).map((item) => item.name) ||
+                []
+              ).join(', ') || 'No countries'
+            }}
           </p>
           <p class="travel-post__paragraph">
             <b>Cities:</b>
-            {{ (getNameFromIds(travelPost?.cities || [], cities).map(item => item.name) || []).join(', ') || 'No cities' }}
+            {{
+              (
+                getNameFromIds(travelPost?.cities || [], cities).map((item) => item.name) || []
+              ).join(', ') || 'No cities'
+            }}
           </p>
           <p class="travel-post__paragraph">
             <b>Activities:</b>
-            {{ (getNameFromIds(travelPost?.activities || [], activities).map(item => item.name) || []).join(', ') || 'No activities' }}
-
+            {{
+              (
+                getNameFromIds(travelPost?.activities || [], activities).map((item) => item.name) ||
+                []
+              ).join(', ') || 'No activities'
+            }}
           </p>
 
           <div class="travel-post__todo">
-            <p class="travel-post__paragraph"><b>Todo List:</b></p>
+            <p class="travel-post__paragraph"><b>Places to visit:</b></p>
             <ul v-if="travelPost?.todoItems?.length > 0">
               <li v-for="(item, index) in travelPost.todoItems" :key="index">
                 <div class="todo-item">
@@ -330,10 +320,12 @@ const submitForm = async () => {
                 </div>
               </li>
             </ul>
-            <p v-else>No items in the todo list.</p>
+            <p v-else>No places were found.</p>
           </div>
 
-          <button class="btn btn--viewpost" @click="goBack">Go back</button>
+          <div style="text-align: center">
+            <button class="btn btn--viewpost" @click="goBack">Go back</button>
+          </div>
         </div>
 
         <div v-else>
@@ -366,7 +358,7 @@ const submitForm = async () => {
 
             <div class="add-travel__section">
               <div class="container__subtitle">
-                <label for="countries"><b>Visited Countries</b></label>
+                <label for="countries"><b>Countries</b></label>
               </div>
               <div class="add-travel__input">
                 <input
@@ -384,7 +376,7 @@ const submitForm = async () => {
                       v-for="country in filteredCountries"
                       :key="country.id"
                       @click="addCountry(country)"
-                      class="suggestion-item"
+                      class="add-travel__item"
                     >
                       {{ country.name }}
                     </li>
@@ -405,7 +397,7 @@ const submitForm = async () => {
 
             <div class="add-travel__section">
               <div class="container__subtitle">
-                <label for="cities"><b>Visited Cities</b></label>
+                <label for="cities"><b>Cities</b></label>
               </div>
               <div class="add-travel__input">
                 <input
@@ -482,13 +474,13 @@ const submitForm = async () => {
 
             <div class="add-travel__section">
               <div class="container__subtitle">
-                <label for="todo"><b>Todo List</b></label>
+                <label for="todo"><b>Places to visit</b></label>
               </div>
               <div class="add-travel__input">
                 <input
                   v-model="newTask"
                   @keydown.enter.prevent="addTodo"
-                  placeholder="Add a new task"
+                  placeholder="Add a new one"
                 />
                 <ul>
                   <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
@@ -511,10 +503,12 @@ const submitForm = async () => {
 
             <div class="add-travel__ftr">
               <div>
-                <button type="button" class="btn btn--delete" @click="goBack">Cancel</button>
+                <button type="button" class="btn btn--delete" @click="goBack">
+                  Cancel editing
+                </button>
               </div>
               <div>
-                <button type="submit" class="btn btn--submit">Add travel</button>
+                <button type="submit" class="btn btn--submit">Update travel</button>
               </div>
             </div>
           </form>
@@ -571,7 +565,6 @@ const submitForm = async () => {
   border-radius: 5px;
   appearance: none;
   background-color: v-bind(themeStyle.backgroundColor);
-  cursor: pointer;
   outline: none;
   padding: 0;
   margin: 10px;
@@ -604,8 +597,12 @@ const submitForm = async () => {
 
 .btn--viewpost {
   background: v-bind(themeStyle.backgroundColor);
-  border-color: v-bind(themeStyle.secondary);
   color: v-bind(themeStyle.color);
+  box-shadow: 0 3px 5px v-bind(themeStyle.secondary);
+}
+
+.btn--viewpost {
+  box-shadow: 0 3px 5px v-bind(themeStyle.primary);
 }
 
 .add-travel {
@@ -613,16 +610,14 @@ const submitForm = async () => {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  //width: 100%;
 
+  background: v-bind(themeStyle.backgroundColor);
   border: 0 solid v-bind(themeStyle.color);
   box-shadow: 19px 22px 41px v-bind(themeStyle.color);
 
   border-radius: 32px;
   padding: 30px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-top: 20px;
+  margin: 20px 20px 50px;
 }
 
 input {
@@ -675,7 +670,11 @@ input {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 5px;
+  padding: 8px;
+}
+
+.add-travel__item:hover {
+  background-color: #f0f0f0;
 }
 
 .add-travel__item-button {
@@ -693,23 +692,12 @@ input {
 }
 
 .add-travel__suggestion {
-  position: absolute;
-  z-index: 10;
   width: 100%;
   border: 2px solid v-bind(themeStyle.secondary);
   border-radius: 16px;
   background-color: v-bind(themeStyle.backgroundColor);
-  margin-top: 70px;
+  margin-top: 20px;
   overflow-y: auto;
-}
-
-.suggestion-item {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.suggestion-item:hover {
-  background-color: #f0f0f0;
 }
 
 ul {
@@ -778,13 +766,26 @@ ul {
   transition: background-color 0.3s;
 }
 
+.btn--add-todo:hover {
+  border-color: v-bind(themeStyle.primary);
+  color: v-bind(themeStyle.primary);
+}
+
 .btn--delete {
-  border-color: v-bind(themeStyle.warning);
   color: v-bind(themeStyle.warning);
+  box-shadow: 0 3px 5px v-bind(themeStyle.secondary);
+}
+
+.btn--delete:hover {
+  box-shadow: 0 3px 5px v-bind(themeStyle.warning);
 }
 
 .btn--submit {
-  border-color: v-bind(themeStyle.secondary);
-  color: v-bind(themeStyle.color);
+  color: v-bind(themeStyle.primary);
+  box-shadow: 0 3px 5px v-bind(themeStyle.secondary);
+}
+
+.btn--submit:hover {
+  box-shadow: 0 3px 5px v-bind(themeStyle.primary);
 }
 </style>
