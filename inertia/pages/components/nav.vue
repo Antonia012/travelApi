@@ -206,7 +206,6 @@ const logout = async () => {
 .dropdown-content {
   display: none;
   width: 100%;
-  background-color: #333;
   z-index: 1;
   justify-content: space-between;
   padding: 10px;
@@ -240,7 +239,9 @@ const logout = async () => {
   .dropdown-content {
     display: flex;
     flex-direction: column;
-    background-color: #333;
+    background-color: v-bind(themeStyle.backgroundColor);
+    border-radius: 32px;
+    box-shadow: 0 3px 3px v-bind(themeStyle.secondary);
   }
 
   .nav-left-dropdown a,

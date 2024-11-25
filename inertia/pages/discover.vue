@@ -105,8 +105,8 @@ onMounted(() => {
 <style scoped>
 .discover__background {
   background: v-bind(themeStyle.backgroundColor);
-  border-radius: 32px;
   padding: 20px;
+  border-radius: 32px;
 
   box-shadow: 0 0 10px v-bind(themeStyle.secondary);
 
