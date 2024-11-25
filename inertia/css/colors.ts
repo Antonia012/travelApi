@@ -13,7 +13,7 @@ export const darkPalette = {
   primary: '#e1f6e1',
   secondary: '#7FC6A4',
   accent: '#F4B886',
-  warning: '#9A031E',
+  warning: '#91431b',
 }
 
 export type Palette = typeof lightPalette | typeof darkPalette

@@ -20,10 +20,12 @@ const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth;
 };
 function toggleTheme() {
-  // store.commit('toggleTheme')
-  // localStorage.setItem('theme', store.state.theme)
-
   isPopupVisible.value = true
+}
+
+function goDark() {
+  store.commit('toggleTheme')
+  localStorage.setItem('theme', store.state.theme)
 }
 
 function closePopUp() {
@@ -116,6 +118,7 @@ const logout = async () => {
     <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
       <div class="popup-content">
         <p class="error-message">{{ errorMessage }}</p>
+        <div @click="goDark" class="easter-egg">easteregg</div>
         <button @click="isPopupVisible = false">Close</button>
       </div>
     </div>
@@ -137,6 +140,11 @@ const logout = async () => {
   @media (max-width: 600px) {
     flex-direction: column;
   }
+}
+
+.easter-egg{
+  cursor: pointer;
+  color: v-bind(themeStyle.backgroundColor);
 }
 
 .mode {
