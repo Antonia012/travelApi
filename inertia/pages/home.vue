@@ -1,12 +1,13 @@
-<script setup lang="ts">
+<script setup>
 import { Head } from '@inertiajs/vue3'
 
-import Nav from './components/nav.vue'
+import Nav from './components/layout.vue'
 </script>
+
 
 <template>
   <Head title="Travel Map" />
-  <Nav />
+<!--  <Nav />-->
 </template>
 
 <style scoped></style>

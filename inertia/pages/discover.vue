@@ -1,12 +1,13 @@
-<script setup lang="ts">
+<script setup >
 import { ref, onMounted, computed } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
-import Nav from './components/nav.vue'
+import Nav from './components/layout.vue'
 import axios from 'axios'
 import TravelPost from '~/pages/components/post.vue'
 import store from '~/css/themeStore'
+import Layout from "~/pages/components/layout.vue";
 
-const travelPosts = ref([])
+const travelPosts = ref(null)
 const cities = ref([])
 const countries = ref([])
 const activities = ref([])
@@ -74,17 +75,19 @@ onMounted(() => {
 
 <template>
   <Head title="Travel Map - Discover" />
-  <Nav />
+  <Layout>
   <div class="app__container" :style="themeStyle">
     <div class="container" >
       <div class="discover__background">
         <div class="container__title">Discover</div>
-        <div v-if="travelPosts.length === 0">
+        <div v-if="travelPosts && travelPosts.length === 0">
           No travel posts found. Be the first traveler and experience new adventures ! &nbsp; :)
         </div>
       </div>
 
       <ul class="mtb3">
+        <TransitionGroup name="fade" tag="ul">
+
         <TravelPost
           v-for="post in travelPosts"
           :key="post.id"
@@ -97,12 +100,31 @@ onMounted(() => {
           :style="themeStyle"
           @view-more="handleViewMore(post.id)"
         />
+        </TransitionGroup>
       </ul>
     </div>
   </div>
+  </Layout>
 </template>
 
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95); /* Slight shrink effect */
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: scale(1); /* Full size */
+}
+
 .discover__background {
   background: v-bind(themeStyle.backgroundColor);
   padding: 20px;

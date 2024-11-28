@@ -1,12 +1,13 @@
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
-import Nav from './components/nav.vue'
+import Nav from './components/layout.vue'
 import TravelPost from './components/post.vue'
 import axios from 'axios'
 import store from '~/css/themeStore'
+import Layout from "~/pages/components/layout.vue";
 
-const travelPosts = ref([])
+const travelPosts = ref(null)
 const cities = ref([])
 const countries = ref([])
 const activities = ref([])
@@ -103,44 +104,79 @@ const handleViewMore = async (postId) => {
 
 <template>
   <Head title="Travel Map - My Travels" />
-  <Nav />
-
-  <div class="app__container" :style="themeStyle">
-    <div class="container">
-      <div v-if="travelPosts.length === 0" class="my-travels__background mb2">
-        No travel posts found. Why not to plan an adventure ? :)
-      </div>
-
-      <div>
-        <div class="my-travels__header">
-          <a href="/addtravel" class="btn btn--add-travel">Add New Travel</a>
+  <Layout>
+    <div class="app__container" :style="themeStyle">
+      <div class="container">
+        <Transition name="fade-bg">
+        <div v-if="travelPosts && travelPosts.length === 0" class="my-travels__background mb2" >
+          No travel posts found. Why not to plan an adventure ? :)
         </div>
-
+        </Transition>
         <div>
-          <ul class="mtb3">
-            <TravelPost
-              v-for="post in travelPosts"
-              :key="post.id"
-              :post="post"
-              viewMode="edit"
-              :countries="countries"
-              :cities="cities"
-              :activities="activities"
-              class="mtb10"
-              @post-deleted="refreshPage"
-              @edit-post="handleEditPost(post.id)"
-              @delete-post="handleDeletePost(post.id)"
-              @view-more="handleViewMore(post.id, post.username)"
-            />
-          </ul>
+          <div class="my-travels__header">
+            <a href="/addtravel" class="btn btn--add-travel">Add New Travel</a>
+          </div>
+
+          <div>
+            <ul class="mtb3">
+              <TransitionGroup name="fade" tag="ul">
+              <TravelPost
+                v-for="post in travelPosts"
+                :key="post.id"
+                :post="post"
+                viewMode="edit"
+                :countries="countries"
+                :cities="cities"
+                :activities="activities"
+                class="mtb10"
+                @post-deleted="refreshPage"
+                @edit-post="handleEditPost(post.id)"
+                @delete-post="handleDeletePost(post.id)"
+                @view-more="handleViewMore(post.id, post.username)"
+              />
+              </TransitionGroup>
+            </ul>
+          </div>
         </div>
       </div>
-
     </div>
-  </div>
+  </Layout>
 </template>
 
 <style scoped>
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95); /* Slight shrink effect */
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: scale(1); /* Full size */
+}
+
+.fade-bg-enter-active,
+.fade-bg-leave-active {
+  transition: opacity 0.001s ease, transform 0.00001s ease;
+}
+
+.fade-bg-enter-from,
+.fade-bg-leave-to {
+  opacity: 0;
+}
+
+.fade-bg-enter-to,
+.fade-bg-leave-from {
+  opacity: 1;
+}
+
 .my-travels__header {
   justify-self: center;
 }

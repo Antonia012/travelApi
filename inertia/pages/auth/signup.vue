@@ -1,9 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import { Head, router } from '@inertiajs/vue3'
 import { ref, onMounted, computed } from 'vue'
-import Nav from '~/pages/components/nav.vue'
+import Nav from '~/pages/components/layout.vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
+import Layout from "~/pages/components/layout.vue";
 
 const themeStyle = computed(() => store.getters.themeStyle)
 
@@ -17,13 +18,13 @@ const password = ref('')
 const errorMessage = ref('')
 const userId = ref('')
 
-onMounted( async () =>{
+onMounted(async () => {
   try {
-    const response = await axios.get('/user/count');
-    const maxId = response.data.maxId || 0;
-    userId.value = maxId + 1;
+    const response = await axios.get('/user/count')
+    const maxId = response.data.maxId || 0
+    userId.value = maxId + 1
   } catch (error) {
-    console.error('Error fetching max ID:', error);
+    console.error('Error fetching max ID:', error)
   }
 })
 
@@ -38,7 +39,7 @@ const register = async () => {
     })
 
     await router.get('/login')
-  } catch (error: any) {
+  } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Registration failed'
     console.error('Registration failed', error)
   }
@@ -47,56 +48,57 @@ const register = async () => {
 
 <template>
   <Head title="Travel Map - Sign Up" />
-  <Nav />
+  <!--  <Nav />-->
+  <Layout>
+    <div class="app__container" :style="themeStyle">
+      <div class="container">
+        <form class="signup__section" @submit.prevent="register" method="post">
+          <div class="container__subtitle">Sign Up Form</div>
 
-  <div class="app__container" :style="themeStyle">
-    <div class="container">
-      <form class="signup__section" @submit.prevent="register" method="post">
-        <div class="container__subtitle">Sign Up Form</div>
+          <div class="p16">
+            <div class="signup__item">
+              <label for="uname"><b>Username</b></label>
+              <input
+                :style="{ background: themeStyle.backgroundColor }"
+                type="text"
+                placeholder="Enter Username"
+                v-model="username"
+                required
+              />
+            </div>
 
-        <div class="p16">
-          <div class="signup__item">
-            <label for="uname"><b>Username</b></label>
-            <input
-              :style="{ background: themeStyle.backgroundColor }"
-              type="text"
-              placeholder="Enter Username"
-              v-model="username"
-              required
-            />
+            <div class="signup__item">
+              <label for="email"><b>Email</b></label>
+              <input
+                :style="{ background: themeStyle.backgroundColor }"
+                type="email"
+                placeholder="Enter Email"
+                v-model="email"
+                required
+              />
+            </div>
+
+            <div class="signup__item">
+              <label for="psw"><b>Password</b></label>
+              <input
+                :style="{ background: themeStyle.backgroundColor }"
+                type="password"
+                placeholder="Enter Password"
+                v-model="password"
+                required
+              />
+            </div>
+
+            <div class="pos-center">
+              <button type="submit" class="btn btn--submit">Sign Up</button>
+            </div>
           </div>
 
-          <div class="signup__item">
-            <label for="email"><b>Email</b></label>
-            <input
-              :style="{ background: themeStyle.backgroundColor }"
-              type="email"
-              placeholder="Enter Email"
-              v-model="email"
-              required
-            />
-          </div>
-
-          <div class="signup__item">
-            <label for="psw"><b>Password</b></label>
-            <input
-              :style="{ background: themeStyle.backgroundColor }"
-              type="password"
-              placeholder="Enter Password"
-              v-model="password"
-              required
-            />
-          </div>
-
-          <div class="pos-center">
-            <button type="submit" class="btn btn--submit">Sign Up</button>
-          </div>
-        </div>
-
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-      </form>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        </form>
+      </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <style scoped>
@@ -137,7 +139,6 @@ input {
 
 .btn--submit:hover {
   box-shadow: 0 3px 5px v-bind(themeStyle.primary);
-
 }
 
 .signup__item {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { usePage, router } from '@inertiajs/vue3'
-import Nav from '~/pages/components/nav.vue'
+import Nav from '~/pages/components/layout.vue'
 import store from '~/css/themeStore'
 import { computed, onMounted, ref } from 'vue'
 import { format } from 'date-fns'
 import axios from 'axios'
+import Layout from "~/pages/components/layout.vue";
 
 const themeStyle = computed(() => store.getters.themeStyle)
 
@@ -263,7 +264,7 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <Nav />
+  <Layout>
   <div v-if="travelPost" :style="themeStyle">
     <div class="app__container">
       <div class="container">
@@ -516,6 +517,7 @@ const submitForm = async () => {
       </div>
     </div>
   </div>
+  </Layout>
 </template>
 
 <style scoped>

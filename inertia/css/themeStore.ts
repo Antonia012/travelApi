@@ -9,6 +9,7 @@ const store = createStore({
     palette: lightPalette as Palette,
     isMenuOpen: false,
     isLoggedIn: false,
+    userName: '',
   },
   mutations: {
     toggleTheme(state) {

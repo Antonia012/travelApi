@@ -4,6 +4,7 @@ import axios from 'axios'
 import store from '~/css/themeStore' // Import the Vuex store (ensure it's defined)
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import layout from '~/pages/components/layout.vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -39,6 +40,16 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     // Create the SSR app instance
     const app = createSSRApp({ render: () => h(App, props) })
+    // const app = createSSRApp({
+    //   render: () =>
+    //     h(
+    //       layout,
+    //       {},
+    //       {
+    //         default: () => h(App, props), // Wrap pages with the layout component
+    //       }
+    //     ),
+    // })
 
     // Use the store (Vuex or Pinia)
     app.use(store) // Ensure the store is used

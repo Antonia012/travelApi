@@ -76,8 +76,8 @@ export default class AuthController {
   }
 
   async countUsers(ctx: HttpContextContract) {
+    const { response } = ctx
     try {
-      const { response } = ctx
       const result = await db.from('users').max('id')
       const maxId = result[0]?.max ?? 0
       return response.json({ maxId })

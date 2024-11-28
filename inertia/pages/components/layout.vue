@@ -1,24 +1,20 @@
-<script setup lang="ts">
+<script setup>
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
-import logo from "/resources/img/logo.png"
+import logo from '/resources/img/logo.png'
 import store from '~/css/themeStore'
 import axios from 'axios'
-import { router } from "@inertiajs/vue3";
+import { router } from '@inertiajs/vue3'
+import Pokus from '~/pages/components/nav.vue'
 
 const userName = ref('')
 const themeStyle = computed(() => store.getters.themeStyle)
 const isLoggedIn = computed(() => store.state.isLoggedIn)
 const dropdownVisible = ref(false)
-const isMobile = computed(() => windowWidth.value < 600);
-const windowWidth = ref(0);
+const isMobile = computed(() => windowWidth.value < 600)
+const windowWidth = ref(0)
 const isPopupVisible = ref(false)
 let errorMessage = ref('Wanna try dark mode? Buy premium')
 
-
-
-const updateWindowWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
 function toggleTheme() {
   isPopupVisible.value = true
 }
@@ -39,10 +35,6 @@ function toggleDropdown() {
 onMounted(async () => {
   await store.dispatch('loadThemeFromLocalStorage')
 
-  window.addEventListener('resize', updateWindowWidth);
-
-  updateWindowWidth()
-
   try {
     const response = await axios.get('/user')
     userName.value = response.data.username
@@ -50,10 +42,6 @@ onMounted(async () => {
     console.error('Failed to fetch user details', error)
   }
 })
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateWindowWidth);
-});
 
 const logout = async () => {
   try {
@@ -63,23 +51,47 @@ const logout = async () => {
     localStorage.setItem('isLoggedIn', 'false')
 
     await router.get('/discover')
-  } catch (error: any) {
+  } catch (error) {
     console.error('Logout failed', error)
   }
+}
+
+</script>
+
+<script>
+import axios from 'axios'
+import { ref } from 'vue'
+
+export default {
+  name: 'Layout',
+  setup() {
+    const userName = ref('')
+    const getUserName = async () => {
+      try {
+        const response = await axios.get('/user')
+        userName.value = response.data.username
+      } catch (error) {
+        console.error('Failed to fetch user details', error)
+      }
+    }
+
+    // Call the function when the component is mounted
+    getUserName()
+
+    return {
+      userName,
+    }
+  },
 }
 </script>
 
 <template>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <div :class="['topnav']" :style="themeStyle">
     <div class="topnav__mobile">
-      <div @click="toggleTheme" :style="themeStyle" style="align-content: center" >
-        <img src="/resources/img/mode.png" alt="" class="mode">
-      </div>
-      <div class="nav-center" v-if="isMobile">
-        <div class="logo" @click="toggleDropdown()">
-          <img :src="logo" alt="Logo" class="logo-img" />
-        </div>
+      <div @click="toggleTheme" :style="themeStyle" style="align-content: center">
+        <img src="/resources/img/mode.png" alt="" class="mode" />
       </div>
     </div>
 
@@ -88,7 +100,7 @@ const logout = async () => {
       <a href="/about" :style="themeStyle">About</a>
     </div>
 
-    <div class="nav-center" v-if="!isMobile">
+    <div class="nav-center">
       <div class="logo" @click="toggleDropdown()">
         <img :src="logo" alt="Logo" class="logo-img" />
       </div>
@@ -98,8 +110,10 @@ const logout = async () => {
       <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
       <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
       <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
-      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle">Log Out</a>
-      <span v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</span>
+      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle"
+        >Log Out</a
+      >
+      <span v-if="isLoggedIn" :style="themeStyle" v-cloak>Welcome, {{ userName }}</span>
     </div>
 
     <div v-if="dropdownVisible" class="dropdown-content">
@@ -124,9 +138,31 @@ const logout = async () => {
     </div>
   </div>
 
+  <Transition name="fade" mode="out-in">
+    <slot></slot>
+  </Transition>
+
 </template>
 
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 1s ease; /* Smooth transition with 0.5s duration */
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0; /* Initial or final state: fully transparent */
+  transform: scale(0.95); /* Slight shrink effect */
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1; /* Final or initial state: fully visible */
+  transform: scale(1); /* Slight shrink effect */
+}
+
+
 .topnav {
   padding: 10px 30px;
   overflow: hidden;
@@ -142,21 +178,21 @@ const logout = async () => {
   }
 }
 
-.easter-egg{
+.easter-egg {
   cursor: pointer;
   color: v-bind(themeStyle.backgroundColor);
 }
 
 .mode {
-  height:50px;
+  height: 50px;
   min-width: 50px;
   width: auto;
 }
 
-.topnav__mobile{
+.topnav__mobile {
   display: flex;
   flex-direction: row;
-  gap:30px;
+  gap: 30px;
 }
 
 .nav-left,
@@ -180,11 +216,16 @@ const logout = async () => {
 
 .nav-center .logo {
   display: block;
-  cursor: pointer;
+
+  @media (max-width: 600px){
+    cursor: pointer;
+
+  }
 }
 
 .nav-center .logo-img {
-  max-width: 90px;
+  width: 90px;
+  height: 98px;
 }
 
 .nav-left {

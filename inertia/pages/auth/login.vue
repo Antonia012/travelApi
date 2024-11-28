@@ -1,9 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import { Head, router } from '@inertiajs/vue3'
 import { onMounted, computed, ref } from 'vue'
-import Nav from '~/pages/components/nav.vue'
+import Nav from '~/pages/components/layout.vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
+import Layout from '~/pages/components/layout.vue'
 
 const email = ref('')
 const password = ref('')
@@ -30,7 +31,7 @@ const login = async () => {
     localStorage.setItem('isLoggedIn', 'true')
 
     await router.get('/mytravels')
-  } catch (error: any) {
+  } catch (error) {
     isPopupVisible.value = true
     errorMessage.value = error.response?.data?.message || 'Login failed'
   }
@@ -49,55 +50,55 @@ function closePopUp() {
 
 <template>
   <Head title="Travel Map - Log In" />
-  <Nav />
+  <Layout>
+    <div class="app__container" :style="themeStyle">
+      <div class="container">
+        <div class="login__section">
+          <form @submit.prevent="login" method="post">
+            <div class="container__subtitle pos-center">Log In Form</div>
 
-  <div class="app__container" :style="themeStyle">
-    <div class="container">
-      <div class="login__section">
-        <form @submit.prevent="login" method="post">
-          <div class="container__subtitle pos-center">Log In Form</div>
+            <div class="p16">
+              <div class="login__item">
+                <label for="uname"><b>Email</b></label>
+                <input
+                  :style="{ background: themeStyle.backgroundColor }"
+                  type="text"
+                  v-model="email"
+                  placeholder="Enter Email"
+                  required
+                />
+              </div>
 
-          <div class="p16">
-            <div class="login__item">
-              <label for="uname"><b>Email</b></label>
-              <input
-                :style="{ background: themeStyle.backgroundColor }"
-                type="text"
-                v-model="email"
-                placeholder="Enter Email"
-                required
-              />
+              <div class="login__item">
+                <label for="psw"><b>Password</b></label>
+                <input
+                  :style="{ background: themeStyle.backgroundColor }"
+                  type="password"
+                  v-model="password"
+                  placeholder="Enter Password"
+                  required
+                />
+              </div>
+
+              <div class="pos-center">
+                <button type="submit" class="btn btn--login">Login</button>
+              </div>
             </div>
-
-            <div class="login__item">
-              <label for="psw"><b>Password</b></label>
-              <input
-                :style="{ background: themeStyle.backgroundColor }"
-                type="password"
-                v-model="password"
-                placeholder="Enter Password"
-                required
-              />
-            </div>
-
-            <div class="pos-center">
-              <button type="submit" class="btn btn--login">Login</button>
-            </div>
+          </form>
+          <div class="login__ftr-container">
+            <button class="psw" @click="forgotPassword">Forgot password?</button>
           </div>
-        </form>
-        <div class="login__ftr-container">
-          <button class="psw" @click="forgotPassword">Forgot password?</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
-    <div class="popup-content">
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-      <button @click="isPopupVisible = false">Close</button>
+    <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
+      <div class="popup-content">
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <button @click="isPopupVisible = false">Close</button>
+      </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <style scoped>
@@ -113,7 +114,6 @@ function closePopUp() {
   max-width: 400px;
   margin-top: 20px;
 }
-
 
 input {
   width: 100%;

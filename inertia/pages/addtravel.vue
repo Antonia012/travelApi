@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3'
-import Nav from './components/nav.vue'
+import Nav from './components/layout.vue'
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import store from '~/css/themeStore'
+import Layout from '~/pages/components/layout.vue'
 
 const userName = ref('')
 let getNewPostId = ref('')
@@ -159,7 +160,7 @@ const removeActivity = (index: number) => {
 }
 
 function goBack() {
-  history.back()
+  router.get('/mytravels')
 }
 
 const submitForm = async () => {
@@ -195,172 +196,179 @@ const submitForm = async () => {
 
 <template>
   <Head title="Travel Map - Add Travel" />
-  <Nav />
+  <Layout>
+    <div class="app__container" :style="themeStyle">
+      <div class="container">
+        <form class="add-travel" @submit.prevent="submitForm">
+          <div class="container__title">Plan new travel</div>
 
-  <div class="app__container" :style="themeStyle">
-    <div class="container">
-      <form class="add-travel" @submit.prevent="submitForm">
-        <div class="container__title">Plan new travel</div>
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="title"><b>Title</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input type="text" v-model="title" placeholder="Enter Title" name="title" required />
+            </div>
+          </div>
 
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="title"><b>Title</b></label>
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="about"><b>About</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input type="text" v-model="about" placeholder="Enter About Trip" name="about" />
+            </div>
           </div>
-          <div class="add-travel__input">
-            <input type="text" v-model="title" placeholder="Enter Title" name="title" required />
-          </div>
-        </div>
 
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="about"><b>About</b></label>
-          </div>
-          <div class="add-travel__input">
-            <input type="text" v-model="about" placeholder="Enter About Trip" name="about" />
-          </div>
-        </div>
-
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="countries"><b>Countries</b></label>
-          </div>
-          <div class="add-travel__input">
-            <input
-              type="text"
-              v-model="countryInput"
-              placeholder="Enter Country"
-              @keydown.enter.prevent="addCountry({ id: null, name: countryInput })"
-            />
-            <div class="add-travel__suggestion" v-if="countryInput && filteredCountries.length > 0">
-              <ul>
-                <li
-                  v-for="country in filteredCountries"
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="countries"><b>Countries</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input
+                type="text"
+                v-model="countryInput"
+                placeholder="Enter Country"
+                @keydown.enter.prevent="addCountry({ id: null, name: countryInput })"
+              />
+              <div
+                class="add-travel__suggestion"
+                v-if="countryInput && filteredCountries.length > 0"
+              >
+                <ul>
+                  <li
+                    v-for="country in filteredCountries"
+                    :key="country.id"
+                    @click="addCountry(country)"
+                    class="add-travel__item"
+                  >
+                    {{ country.name }}
+                  </li>
+                </ul>
+              </div>
+              <div class="selected-countries">
+                <span
+                  v-for="(country, index) in selectedCountries"
                   :key="country.id"
-                  @click="addCountry(country)"
                   class="add-travel__item"
                 >
                   {{ country.name }}
-                </li>
-              </ul>
-            </div>
-            <div class="selected-countries">
-              <span
-                v-for="(country, index) in selectedCountries"
-                :key="country.id"
-                class="add-travel__item"
-              >
-                {{ country.name }}
-                <button class="add-travel__item-button" @click="removeCountry(index)">x</button>
-              </span>
+                  <button class="add-travel__item-button" @click="removeCountry(index)">x</button>
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="cities"><b>Cities</b></label>
-          </div>
-          <div class="add-travel__input">
-            <input
-              type="text"
-              v-model="cityInput"
-              placeholder="Enter City"
-              @keydown.enter.prevent="addCity({ id: null, name: cityInput })"
-            />
-            <div class="add-travel__suggestion" v-if="cityInput && filteredCities.length > 0">
-              <ul>
-                <li
-                  v-for="city in filteredCities"
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="cities"><b>Cities</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input
+                type="text"
+                v-model="cityInput"
+                placeholder="Enter City"
+                @keydown.enter.prevent="addCity({ id: null, name: cityInput })"
+              />
+              <div class="add-travel__suggestion" v-if="cityInput && filteredCities.length > 0">
+                <ul>
+                  <li
+                    v-for="city in filteredCities"
+                    :key="city.id"
+                    @click="addCity(city)"
+                    class="add-travel__item"
+                  >
+                    {{ city.name }}
+                  </li>
+                </ul>
+              </div>
+              <div class="selected-cities">
+                <span
+                  v-for="(city, index) in selectedCities"
                   :key="city.id"
-                  @click="addCity(city)"
                   class="add-travel__item"
                 >
                   {{ city.name }}
-                </li>
-              </ul>
-            </div>
-            <div class="selected-cities">
-              <span v-for="(city, index) in selectedCities" :key="city.id" class="add-travel__item">
-                {{ city.name }}
-                <button class="add-travel__item-button" @click="removeCity(index)">x</button>
-              </span>
+                  <button class="add-travel__item-button" @click="removeCity(index)">x</button>
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="activities"><b>Activities</b></label>
-          </div>
-          <div class="add-travel__input">
-            <input
-              type="text"
-              v-model="activityInput"
-              placeholder="Enter Activity"
-              @keydown.enter.prevent="addActivity({ id: null, name: activityInput })"
-            />
-            <div
-              class="add-travel__suggestion"
-              v-if="activityInput && filteredActivities.length > 0"
-            >
-              <ul>
-                <li
-                  v-for="activity in filteredActivities"
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="activities"><b>Activities</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input
+                type="text"
+                v-model="activityInput"
+                placeholder="Enter Activity"
+                @keydown.enter.prevent="addActivity({ id: null, name: activityInput })"
+              />
+              <div
+                class="add-travel__suggestion"
+                v-if="activityInput && filteredActivities.length > 0"
+              >
+                <ul>
+                  <li
+                    v-for="activity in filteredActivities"
+                    :key="activity.id"
+                    @click="addActivity(activity)"
+                    class="add-travel__item"
+                  >
+                    {{ activity.name }}
+                  </li>
+                </ul>
+              </div>
+              <div class="selected-activities">
+                <span
+                  v-for="(activity, index) in selectedActivities"
                   :key="activity.id"
-                  @click="addActivity(activity)"
                   class="add-travel__item"
                 >
                   {{ activity.name }}
+                  <button class="add-travel__item-button" @click="removeActivity(index)">x</button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="add-travel__section">
+            <div class="container__subtitle">
+              <label for="todo"><b>Places to visit</b></label>
+            </div>
+            <div class="add-travel__input">
+              <input
+                v-model="newTask"
+                @keydown.enter.prevent="addTodo"
+                placeholder="Add a new one"
+              />
+              <ul>
+                <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
+                  <button class="btn--add-todo" @click.prevent="insertTodo(index)">+</button>
+                  <div class="todo-item">
+                    <input class="add-travel__checkbox" type="checkbox" v-model="todo.completed" />
+                    <span>{{ todo.task }}</span>
+                  </div>
+                  <button class="btn btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
                 </li>
               </ul>
             </div>
-            <div class="selected-activities">
-              <span
-                v-for="(activity, index) in selectedActivities"
-                :key="activity.id"
-                class="add-travel__item"
-              >
-                {{ activity.name }}
-                <button class="add-travel__item-button" @click="removeActivity(index)">x</button>
-              </span>
+          </div>
+
+          <div class="add-travel__ftr">
+            <div>
+              <button type="button" class="btn btn--delete" @click="goBack">Cancel travel</button>
+            </div>
+            <div>
+              <button type="submit" class="btn btn--submit">Add travel</button>
             </div>
           </div>
-        </div>
-
-        <div class="add-travel__section">
-          <div class="container__subtitle">
-            <label for="todo"><b>Places to visit</b></label>
-          </div>
-          <div class="add-travel__input">
-            <input
-              v-model="newTask"
-              @keydown.enter.prevent="addTodo"
-              placeholder="Add a new one"
-            />
-            <ul>
-              <li v-for="(todo, index) in todos" :key="index" class="todo-list-item">
-                <button class="btn--add-todo" @click.prevent="insertTodo(index)">+</button>
-                <div class="todo-item">
-                  <input class="add-travel__checkbox" type="checkbox" v-model="todo.completed" />
-                  <span>{{ todo.task }}</span>
-                </div>
-                <button class="btn btn--delete" @click.prevent="deleteTodo(index)">Delete</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="add-travel__ftr">
-          <div>
-            <button type="button" class="btn btn--delete" @click="goBack">Cancel travel</button>
-          </div>
-          <div>
-            <button type="submit" class="btn btn--submit">Add travel</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <style scoped>
@@ -526,8 +534,8 @@ ul {
 }
 
 .btn--add-todo:hover {
-  color:v-bind(themeStyle.primary);
-  border-color:v-bind(themeStyle.primary);
+  color: v-bind(themeStyle.primary);
+  border-color: v-bind(themeStyle.primary);
 }
 
 .btn--delete {
