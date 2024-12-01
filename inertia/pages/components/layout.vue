@@ -1,19 +1,40 @@
 <script setup>
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
-import logo from '/resources/img/logo.png'
+import { computed, onMounted, ref } from 'vue'
 import store from '~/css/themeStore'
 import axios from 'axios'
 import { router } from '@inertiajs/vue3'
-import Pokus from '~/pages/components/nav.vue'
 
-const userName = ref('')
+const logo = ref('/resources/img/logo.png')
 const themeStyle = computed(() => store.getters.themeStyle)
 const isLoggedIn = computed(() => store.state.isLoggedIn)
+const getMode = computed(() => store.state.theme)
 const dropdownVisible = ref(false)
-const isMobile = computed(() => windowWidth.value < 600)
-const windowWidth = ref(0)
 const isPopupVisible = ref(false)
+
 let errorMessage = ref('Wanna try dark mode? Buy premium')
+
+const userName = computed(() => store.state.userName)
+const mode = ref('/resources/img/mode.png')
+const mode2 = ref('/resources/img/mode2.png')
+
+const modeLogo = ref(mode.value)
+
+onMounted(async () => {
+  await store.dispatch('loadThemeFromLocalStorage')
+
+  // try {
+  //   const response = await axios.get('/user')
+  //   userName.value = response.data.username
+  // } catch (error) {
+  //   console.error('Failed to fetch user details', error)
+  // }
+
+  console.log('s')
+  if (getMode.value === 'dark') {
+    modeLogo.value = mode2.value
+    console.log('d')
+  }
+})
 
 function toggleTheme() {
   isPopupVisible.value = true
@@ -22,6 +43,12 @@ function toggleTheme() {
 function goDark() {
   store.commit('toggleTheme')
   localStorage.setItem('theme', store.state.theme)
+
+  if (modeLogo === mode) {
+    modeLogo.value = mode2.value
+  } else {
+    modeLogo.value = mode.value
+  }
 }
 
 function closePopUp() {
@@ -32,17 +59,6 @@ function toggleDropdown() {
   dropdownVisible.value = !dropdownVisible.value
 }
 
-onMounted(async () => {
-  await store.dispatch('loadThemeFromLocalStorage')
-
-  try {
-    const response = await axios.get('/user')
-    userName.value = response.data.username
-  } catch (error) {
-    console.error('Failed to fetch user details', error)
-  }
-})
-
 const logout = async () => {
   try {
     const response = await axios.post('/logout')
@@ -50,118 +66,98 @@ const logout = async () => {
     store.commit('setLoginStatus', false)
     localStorage.setItem('isLoggedIn', 'false')
 
+    store.commit('setUserName', 'notFound')
+    localStorage.setItem('userName', 'notFound')
+
     await router.get('/discover')
   } catch (error) {
     console.error('Logout failed', error)
   }
 }
-
 </script>
 
 <script>
-import axios from 'axios'
-import { ref } from 'vue'
-
 export default {
   name: 'Layout',
-  setup() {
-    const userName = ref('')
-    const getUserName = async () => {
-      try {
-        const response = await axios.get('/user')
-        userName.value = response.data.username
-      } catch (error) {
-        console.error('Failed to fetch user details', error)
-      }
-    }
-
-    // Call the function when the component is mounted
-    getUserName()
-
-    return {
-      userName,
-    }
-  },
 }
 </script>
 
 <template>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <div :class="['topnav']" :style="themeStyle">
-    <div class="topnav__mobile">
-      <div @click="toggleTheme" :style="themeStyle" style="align-content: center">
-        <img src="/resources/img/mode.png" alt="" class="mode" />
+  <Transition name="fade">
+    <div :class="['topnav']" :style="themeStyle">
+      <div class="topnav__mobile">
+        <div @click="toggleTheme" :style="themeStyle" style="align-content: center">
+          <img :src="modeLogo" alt="" class="mode" />
+        </div>
       </div>
-    </div>
 
-    <div class="nav-left">
-      <a href="/discover" :style="themeStyle">Discover</a>
-      <a href="/about" :style="themeStyle">About</a>
-    </div>
-
-    <div class="nav-center">
-      <div class="logo" @click="toggleDropdown()">
-        <img :src="logo" alt="Logo" class="logo-img" />
-      </div>
-    </div>
-
-    <div class="nav-right">
-      <a v-if="!isLoggedIn" href="/login" class="auth-split" :style="themeStyle">Log In</a>
-      <a v-if="!isLoggedIn" href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
-      <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
-      <a v-if="isLoggedIn" @click.prevent="logout" class="auth-split" :style="themeStyle"
-        >Log Out</a
-      >
-      <span v-if="isLoggedIn" :style="themeStyle" v-cloak>Welcome, {{ userName }}</span>
-    </div>
-
-    <div v-if="dropdownVisible" class="dropdown-content">
-      <div class="nav-left-dropdown">
+      <div class="nav-left">
         <a href="/discover" :style="themeStyle">Discover</a>
         <a href="/about" :style="themeStyle">About</a>
       </div>
-      <div class="nav-right-dropdown">
-        <a v-if="!isLoggedIn" href="/login" :style="themeStyle">Log In</a>
-        <a v-if="!isLoggedIn" href="/signup" :style="themeStyle">Sign Up</a>
-        <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
-        <a v-if="isLoggedIn" @click.prevent="logout" :style="themeStyle">Log Out</a>
-      </div>
-    </div>
 
-    <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
-      <div class="popup-content">
-        <p class="error-message">{{ errorMessage }}</p>
-        <div @click="goDark" class="easter-egg">easteregg</div>
-        <button @click="isPopupVisible = false">Close</button>
+      <div class="nav-center">
+        <div class="logo" @click="toggleDropdown()">
+          <img :src="logo" alt="Logo" class="logo-img" />
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <div v-if="!isLoggedIn" style="display: flex; flex-direction: row; width: 340px">
+          <a  href="/login" class="auth-split" :style="themeStyle">Log In</a>
+          <a  href="/signup" class="auth-split" :style="themeStyle">Sign Up</a>
+        </div>
+        <div v-if="isLoggedIn" style="display: flex; flex-direction: row">
+          <a href="/mytravels" :style="themeStyle">My Travels</a>
+          <a @click.prevent="logout" class="auth-split" :style="themeStyle"
+            >Log Out</a
+          >
+        </div>
+        <div v-if="isLoggedIn" :style="themeStyle">Welcome, {{ userName }}</div>
+      </div>
+
+      <div v-if="dropdownVisible" class="dropdown-content">
+        <div class="nav-left-dropdown">
+          <a href="/discover" :style="themeStyle">Discover</a>
+          <a href="/about" :style="themeStyle">About</a>
+        </div>
+        <div class="nav-right-dropdown">
+          <a v-if="!isLoggedIn" href="/login" :style="themeStyle">Log In</a>
+          <a v-if="!isLoggedIn" href="/signup" :style="themeStyle">Sign Up</a>
+          <a v-if="isLoggedIn" href="/mytravels" :style="themeStyle">My Travels</a>
+          <a v-if="isLoggedIn" @click.prevent="logout" :style="themeStyle">Log Out</a>
+        </div>
+      </div>
+
+      <div v-if="isPopupVisible" class="popup-overlay" @click.self="closePopUp">
+        <div class="popup-content">
+          <div class="error-message">{{ errorMessage }}</div>
+          <div @click="goDark" class="easter-egg">easteregg</div>
+          <button @click="isPopupVisible = false">Close</button>
+        </div>
       </div>
     </div>
-  </div>
+  </Transition>
 
   <Transition name="fade" mode="out-in">
     <slot></slot>
   </Transition>
-
 </template>
 
 <style scoped>
+[v-cloak] {
+  display: none;
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 1s ease; /* Smooth transition with 0.5s duration */
+  transition: all 20s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0; /* Initial or final state: fully transparent */
-  transform: scale(0.95); /* Slight shrink effect */
+  opacity: 0;
 }
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1; /* Final or initial state: fully visible */
-  transform: scale(1); /* Slight shrink effect */
-}
-
 
 .topnav {
   padding: 10px 30px;
@@ -196,10 +192,13 @@ export default {
 }
 
 .nav-left,
-.nav-center,
 .nav-right {
   display: flex;
   align-items: center;
+}
+
+.nav-left{
+  width: 340px;
 }
 
 .nav-left a,
@@ -211,21 +210,21 @@ export default {
 }
 
 .nav-center {
-  justify-content: center;
+  //justify-content: center;
 }
 
 .nav-center .logo {
   display: block;
 
-  @media (max-width: 600px){
+  @media (max-width: 600px) {
     cursor: pointer;
-
   }
 }
 
 .nav-center .logo-img {
   width: 90px;
   height: 98px;
+  max-width: none;
 }
 
 .nav-left {
@@ -239,9 +238,12 @@ export default {
 }
 
 .auth-split {
+  display: flex;
+  flex-wrap: nowrap;
   text-decoration: none;
   padding: 10px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .dropdown-content {

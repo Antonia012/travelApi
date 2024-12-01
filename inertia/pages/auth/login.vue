@@ -19,7 +19,7 @@ onMounted(() => {
 
 const login = async () => {
   try {
-    const response = await axios.post('/login', {
+    let response = await axios.post('/login', {
       email: email.value,
       password: password.value,
     })
@@ -29,6 +29,15 @@ const login = async () => {
     store.commit('setLoginStatus', true)
 
     localStorage.setItem('isLoggedIn', 'true')
+
+    const userName = ref('')
+
+    response = await axios.get('/user')
+    userName.value = response.data.username
+
+    store.commit('setUserName', userName.value)
+
+    localStorage.setItem('userName', userName.value)
 
     await router.get('/mytravels')
   } catch (error) {
@@ -49,7 +58,7 @@ function closePopUp() {
 </script>
 
 <template>
-  <Head title="Travel Map - Log In" />
+  <Head title="Travel App - Log In" />
   <Layout>
     <div class="app__container" :style="themeStyle">
       <div class="container">

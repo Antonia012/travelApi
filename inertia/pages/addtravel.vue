@@ -195,7 +195,7 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <Head title="Travel Map - Add Travel" />
+  <Head title="Travel App - Add Travel" />
   <Layout>
     <div class="app__container" :style="themeStyle">
       <div class="container">

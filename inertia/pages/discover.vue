@@ -1,4 +1,4 @@
-<script setup >
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import Nav from './components/layout.vue'
@@ -74,7 +74,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Head title="Travel Map - Discover" />
+  <Head title="Travel App - Discover" />
   <Layout>
   <div class="app__container" :style="themeStyle">
     <div class="container" >

@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Head title="Travel Map" />
+  <Head title="Travel App - About" />
   <Layout>
     <div class="app__container" :style="themeStyle">
       <div class="container">
@@ -101,6 +101,8 @@ onMounted(() => {
   padding: 20px;
   font-family: Arial, sans-serif;
   line-height: 1.6;
+
+  text-align: center;
 }
 
 .about__background {

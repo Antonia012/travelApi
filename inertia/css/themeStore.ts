@@ -1,5 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
-// eslint-disable-next-line unicorn/filename-case
 import { createStore } from 'vuex'
 import { Palette, lightPalette, darkPalette } from '~/css/colors'
 
@@ -9,7 +7,7 @@ const store = createStore({
     palette: lightPalette as Palette,
     isMenuOpen: false,
     isLoggedIn: false,
-    userName: '',
+    userName: 'notFound',
   },
   mutations: {
     toggleTheme(state) {
@@ -25,6 +23,9 @@ const store = createStore({
     },
     setLoginStatus(state, status: boolean) {
       state.isLoggedIn = status
+    },
+    setUserName(state, name: string) {
+      state.userName = name
     },
   },
   getters: {
@@ -55,6 +56,11 @@ const store = createStore({
 
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
         commit('setLoginStatus', isLoggedIn)
+
+        const userName = localStorage.getItem('userName')
+        if (userName) {
+          commit('setUserName', userName)
+        }
       }
     },
   },

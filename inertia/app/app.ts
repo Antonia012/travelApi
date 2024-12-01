@@ -27,7 +27,7 @@ axios.interceptors.request.use(
 )
 
 // Create the Inertia app
-createInertiaApp({
+await createInertiaApp({
   progress: { color: '#5468FF' }, // Loading progress color
 
   title: (title) => `${title} - ${appName}`, // Title formatting

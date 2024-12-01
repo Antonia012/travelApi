@@ -17,7 +17,7 @@ const AuthController = () => import('#controllers/auth_controller')
 
 router
   .get('/', async ({ inertia }) => {
-    return inertia.render('home')
+    return inertia.render('discover')
   })
   .as('home')
 

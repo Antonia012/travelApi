@@ -47,8 +47,8 @@ const register = async () => {
 </script>
 
 <template>
-  <Head title="Travel Map - Sign Up" />
-  <!--  <Nav />-->
+  <Head title="Travel App - Sign Up" />
+
   <Layout>
     <div class="app__container" :style="themeStyle">
       <div class="container">

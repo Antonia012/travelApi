@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import Nav from './components/layout.vue'
@@ -103,7 +103,7 @@ const handleViewMore = async (postId) => {
 </script>
 
 <template>
-  <Head title="Travel Map - My Travels" />
+  <Head title="Travel App - My Travels" />
   <Layout>
     <div class="app__container" :style="themeStyle">
       <div class="container">
