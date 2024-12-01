@@ -44,7 +44,7 @@ function goDark() {
   store.commit('toggleTheme')
   localStorage.setItem('theme', store.state.theme)
 
-  if (modeLogo === mode) {
+  if (modeLogo.value === mode.value) {
     modeLogo.value = mode2.value
   } else {
     modeLogo.value = mode.value
