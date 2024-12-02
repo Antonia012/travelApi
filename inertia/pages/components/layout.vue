@@ -139,24 +139,14 @@ export default {
     </div>
   </Transition>
 
-  <Transition name="fade" mode="out-in">
+  <article>
     <slot></slot>
-  </Transition>
+  </article>
 </template>
 
 <style scoped>
 [v-cloak] {
   display: none;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 20s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .topnav {
